@@ -1,0 +1,14 @@
+#Ambiente virtual
+.venv/
+
+#Variaveis de ambiente
+.env/
+
+#Cache do python
+__pycache__/
+*.py[cod]
+
+#VS code
+.vscode/
+
+#Banco S
