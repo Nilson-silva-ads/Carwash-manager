@@ -11,4 +11,13 @@ __pycache__/
 #VS code
 .vscode/
 
-#Banco S
+#Banco SQlite
+data/*.db
+data/*.sqlite3
+
+#logs
+*.log
+
+#Arquivos do sistemas
+.Ds_Store
+Thumbs.db
