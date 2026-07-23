@@ -18,15 +18,15 @@ class BaseRepository(Generic[T]):  #Estamos dizendo que essa classe trabalha com
         self.session.refresh(entity)  #Atualiza o objeto com os dados que o banco gerou automaticamente.
         return entity  #retorna o mesmo objeto atualizado.
 
-    def get_by_id(self, id: int) - T | None:
-        stmt = select(self.model).where(self.model.id == id)  #Cria uma consulta e adiciona o filtro.
+    def get_by_id(self, entity_id: int) -> T | None:
+        stmt = select(self.model).where(self.model.id == entity_id)  #Cria uma consulta e adiciona o filtro.
         result = self.session.execute(stmt)  #executa o banco de dados.
         return result.scalar_one_or_none()  #retorna o objeto encontrado ou None se não existir nunhum registro co aquele ID.
 
-    def get_all(self) -> list(T):
+    def get_all(self) -> list[T]:
         stmt = select(self.model)
         result = self.session.execute(stmt)
-        return result.scalar().all()  #em saclar pegamos apenas o objeto do modelo e usando o all transformamos tudo em uma lista.
+        return result.scalars().all()  #em saclar pegamos apenas o objeto do modelo e usando o all transformamos tudo em uma lista.
 
     def update(self, entity: T) -> T:
         entity = self.session.merge(entity)  #cria a estancia entity e usa o merge para atualizar.
@@ -34,9 +34,9 @@ class BaseRepository(Generic[T]):  #Estamos dizendo que essa classe trabalha com
         self.session.refresh(entity)
         return entity
 
-    def delete(self, id: int) -> bool:
-        entity = self.get_by_id(id)
-        
+    def delete(self, entity_id: int) -> bool:
+        entity = self.get_by_id(entity_id)
+
         if entity is None:
             return False
 
