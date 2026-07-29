@@ -1,7 +1,7 @@
 from app.repositories.employee_repository import EmployeeRepository
 from app.models.employee import Employee
 from app.core.security import hash_password, verify_password
-from app.core.exceptions import EmployeeAlreadyExistsError, EmployeeInactiveError
+from app.core.exceptions import EmployeeAlreadyExistsError, EmployeeInactiveError, EmployeeNotFoundError, UsernameAlreadyExistsError
 
 
 
@@ -23,6 +23,7 @@ class EmployeeService:
         )
 
         return self.employee_repository.create(employee)
+    
 
     def authenticate_employee(self, username: str, password: str) -> Employee:
             #Logica para autenticar um Funionario.
@@ -39,34 +40,71 @@ class EmployeeService:
     
             return employee
 
+
     def get_all_employees(self) -> list[Employee]:
         return self.employee_repository.get_all()
 
     
 
     def get_employee_by_id(self, employee_id: int) -> Employee:
+
         employee = self.employee_repository.get_by_id(employee_id)
 
         if employee is None:
-            raise ValueError("Funcionario não encontrado.")
+            raise EmployeeNotFoundError()
+
+        existing_employee = self.employee_repository.get_by_id(employee_id)
+
+        if(
+            existing_employee and existing_employee.id != employee.id
+        ):
+
+            raise  UsernameAlreadyExistsError()
 
         return employee
+
     
-    def update_employee(self, employee_id: int, name: str | None = None, username: str | None = None, password: str | None = None) -> Employee:
+    def update_employee(self, employee_id: int, name: str | None = None, username: str | None = None) -> Employee:
+
         employee = self.get_employee_by_id(employee_id)
 
-        if name:
-            employee.name = name
-        if username:
-            if self.employee_repository.get_by_username(username):
-                raise ValueError(f"{username} já existe. Por favor, escolha outro.")
-            employee.username = username
-        if password:
-            employee.password_hash = hash_password(password)
+        if name is None:
+            employee.name = name  
 
+        if username:
+            existing_employee = self.employee_repository.get_by_username(username)
+
+            if existing_employee and existing_employee.id != employee.id:
+                raise UsernameAlreadyExistsError(f"Username '{username}' já existe.")
+
+            employee.username = username
+      
         return self.employee_repository.update(employee)
+
+
     
     def deactivate_employee(self, employee_id: int) -> Employee:
+
         employee = self.get_employee_by_id(employee_id)
         employee.is_active = False
         return self.employee_repository.update(employee)
+
+
+    def authenticate_employee(
+        self, 
+        username: str,
+        password: str,
+    ) -> Employee:
+        
+        employee = self.employee_repository.get_by_username(username);
+
+        if employee is None:
+            raise EmployeeNotFoundError("Usuario ou senha invalidos.")
+
+        if not verify_password(password, employee.password_hash): 
+            raise EmployeeNotFoundError("Usuario ou senha invalidos.") 
+
+        if not employee.is_active:
+            raise EmployeeInactiveError("Funcionario inativo.")
+        
+        return employee

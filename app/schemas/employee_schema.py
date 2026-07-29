@@ -15,3 +15,9 @@ class EmployeeResponseSchema(BaseModel):
     username: str
     is_admin: bool
     is_active: bool
+
+class EmployeeUpdateSchema(BaseModel):
+
+    name: str | None = Field(..., min_length=1, max_length=100)
+    username: str = Field(..., min_length=1, max_length=50)
+    is_active: bool

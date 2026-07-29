@@ -6,3 +6,9 @@ class AuthenticationError(Exception):
 
 class EmployeeInactiveError(Exception):
     """ Lança quando um funcionario inativo tenta acessar o sistema """
+
+class EmployeeNotFoundError(Exception):
+    """ Lança quando um funcionario não é encontrado no banco de dados """
+
+class UsernameAlreadyExistsError(Exception):
+    """ Lança quando um username já existe """
