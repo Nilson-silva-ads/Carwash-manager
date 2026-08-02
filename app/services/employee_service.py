@@ -1,7 +1,7 @@
 from app.repositories.employee_repository import EmployeeRepository
 from app.models.employee import Employee
 from app.core.security import hash_password, verify_password
-from app.core.exceptions import EmployeeAlreadyExistsError, EmployeeInactiveError, EmployeeNotFoundError, UsernameAlreadyExistsError
+from app.core.exceptions import EmployeeAlreadyExistsError, EmployeeInactiveError, EmployeeNotFoundError, UsernameAlreadyExistsError, InvalidCredentialsError
 
 
 
@@ -104,6 +104,24 @@ class EmployeeService:
         if not verify_password(password, employee.password_hash): 
             raise EmployeeNotFoundError("Usuario ou senha invalidos.") 
 
+        if not employee.is_active:
+            raise EmployeeInactiveError("Funcionario inativo.")
+        
+        return employee
+
+
+    def get_current_employee(self, payload: dict) -> Employee:
+        sub = payload.get("sub")
+
+        if sub is None:
+            raise InvalidCredentialsError("Token Inválido")
+
+        employee_id = int(sub)
+
+        employee = self.employee_repository.get_by_id(employee_id)
+
+        if employee is None:
+            raise EmployeeNotFoundError("Funcionario não encontrado.")
         if not employee.is_active:
             raise EmployeeInactiveError("Funcionario inativo.")
         

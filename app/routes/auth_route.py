@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from app.services.employee_service import EmployeeService
+from app.services.employee_service import EmployeeService, get_current_employee
 from app.schemas.auth_schema import LoginSchema, TokenSchema
 from app.core.security import create_access_token
 from app.dependencies.employee_dependencies import get_employee_service
@@ -32,3 +32,13 @@ def login(
       )
 
     return TokenSchema(token_type="bearer", access_token=token)
+
+
+
+@router.get("")
+def get_employees(
+    current_employee: Employee = Depends(get_current_employee),
+    service: EmployeeService = Depends(get_employee_service),
+):
+    employees = service.get_all_employes()
+    return employees

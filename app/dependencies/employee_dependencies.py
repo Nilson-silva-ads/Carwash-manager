@@ -1,6 +1,10 @@
 from fastapi import Depends
 from sqlalchemy.orm import Session
 
+from app.models.employee import Employee
+from app.core.auth import oauth2_scheme
+from app.core.security import decode_access_token
+
 from app.services.employee_service import EmployeeService
 from app.database.session import get_db
 from app.repositories.employee_repository import EmployeeRepository
@@ -12,3 +16,13 @@ def get_employee_service(session: Session = Depends(get_db)) -> EmployeeService:
     service = EmployeeService(repository)  #Criamos o serviço.
 
     return service
+
+def get_current_employee( 
+        token: str = Depends(oauth2_scheme),
+        service: EmployeeService = Depends(get_employee_service),
+ ) -> Employee:
+
+    payload = decode_access_token(token)
+    employee = service.get_current_employee(payload)
+
+    return employee

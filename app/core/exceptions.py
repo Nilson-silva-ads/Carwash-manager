@@ -12,3 +12,6 @@ class EmployeeNotFoundError(Exception):
 
 class UsernameAlreadyExistsError(Exception):
     """ Lança quando um username já existe """
+
+class InvalidCredentialsError(Exception):
+    """ Lança quando as credenciais são invalidas """
