@@ -1,5 +1,8 @@
 from fastapi import FastAPI
-from app.routes.employee_route import router as employee_route
+
+from app.core.exception_handlers import register_exception_handlers
+from app.core.routes import employee_router, auth_router
+
 
 app = FastAPI( 
     title="CarWash Maanger",
@@ -7,5 +10,8 @@ app = FastAPI(
     description="API para gerenciamento do post de Lavagem"
 )
 
-app.include_router(employee_route)
+register_exception_handlers(app)
 
+app.include_router(employee_router)
+
+app.include_router(auth_router)

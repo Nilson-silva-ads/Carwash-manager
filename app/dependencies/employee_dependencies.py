@@ -1,4 +1,4 @@
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.models.employee import Employee
@@ -26,3 +26,16 @@ def get_current_employee(
     employee = service.get_current_employee(payload)
 
     return employee
+
+
+def get_current_admin(
+        current_employee: Employee =  Depends(get_current_employee),
+) -> Employee:
+
+    if not current_employee.is_admin:
+        raise HTTPException(
+            status_code=403,
+            detail="Acesso negado."
+        )
+
+    return current_employee

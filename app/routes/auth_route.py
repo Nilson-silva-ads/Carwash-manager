@@ -5,6 +5,7 @@ from app.services.employee_service import EmployeeService, get_current_employee
 from app.schemas.auth_schema import LoginSchema, TokenSchema
 from app.core.security import create_access_token
 from app.dependencies.employee_dependencies import get_employee_service
+from app.models.employee import Employee
 
 
 router = APIRouter(prefix="/employees", tags=["Employees"])
