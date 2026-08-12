@@ -14,7 +14,7 @@ class BaseRepository(Generic[T]):  #Estamos dizendo que essa classe trabalha com
 
     def create(self, entity: T) -> T:
         self.session.add(entity)  #Coloca o objeto na sessão do SQLAlchemy, ainda não gravou no banco.
-        self.session.commit()  #Agora sim o SQLAlchemy envia a operação para o banco de dados.
+        self.session.flush()  #Envia a operação para o banco de dados.
         self.session.refresh(entity)  #Atualiza o objeto com os dados que o banco gerou automaticamente.
         return entity  #retorna o mesmo objeto atualizado.
 

@@ -2,13 +2,13 @@ from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 from datetime import datetime, timezone
 
-from app.core.exceptions import EmployeeNotFoundError, EmployeeInactiveError, InvalidCredentialsError,  EmployeeAlreadyExistsError
+from app.core.exceptions import EmployeeNotFoundError, EmployeeInactiveError, InvalidCredentialsError,  EmployeeAlreadyExistsError, ServiceTypeInactiveError, ServiceTypeNotFoundError
 
 def create_error_response( status_code: int, exc: Exception) -> JSONResponse:
     return JSONResponse(
         status_code=status_code,
         content={
-            "error": exc._class__.__name__,
+            "error": exc.__class__.__name__,
             "message": str(exc),
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
@@ -35,3 +35,11 @@ def register_exception_handlers(app: FastAPI):
     @app.exception_handler(InvalidCredentialsError)
     async def invalid_credentials_exception_handler(request: Request, exc: InvalidCredentialsError):
         return create_error_response(status.HTTP_401_UNAUTHORIZED, exc)
+
+    @app.exception_handler(ServiceTypeNotFoundError)
+    async def service_type_not_found_exception_handler(request: Request, exc: ServiceTypeNotFoundError):
+        return create_error_response(status.HTTP_404_NOT_FOUND, exc)
+
+    @app.exception_handler(ServiceTypeInactiveError)
+    async def service_type_inactive_exception_handler(request: Request, exc: ServiceTypeInactiveError):
+        return create_error_response(status.HTTP_403_FORBIDDEN, exc)

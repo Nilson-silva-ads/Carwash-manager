@@ -5,8 +5,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base_model import BaseModel
 
-if TYPE_CHECKING:
-    from app.models.service import Service
 
 class ServiceType(BaseModel):
     """ Modelo que representa um tipo de serviço. """
@@ -23,4 +21,7 @@ class ServiceType(BaseModel):
         nullable=False,
         )
 
-    services: Mapped[list["Service"]] = relationship(back_populates="service_type")
+    service_order_items: Mapped[list["ServiceOrderItem"]] = relationship(back_populates="service_type")
+
+if TYPE_CHECKING:
+    from app.models.service_order_item import ServiceOrderItem

@@ -6,7 +6,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.models.base_model import BaseModel
 
 if TYPE_CHECKING:
-    from app.models.service import Service
+    from app.models.service_order import ServiceOrder
 
 class Employee(BaseModel):
     """ Classe que representa um funcionario """
@@ -41,5 +41,6 @@ class Employee(BaseModel):
         nullable=False,
         )
 
-    services: Mapped[list["Service"]] = relationship(back_populates="employee")
+    service_orders: Mapped[list["ServiceOrder"]] = relationship(back_populates="employee")
 
+  

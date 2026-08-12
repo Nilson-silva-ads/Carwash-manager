@@ -9,3 +9,9 @@ class EmployeeNotFoundError(Exception):
 
 class InvalidCredentialsError(Exception):
     """ Lança quando as credenciais são invalidas """
+
+class ServiceTypeNotFoundError(Exception):
+    """ Lança quando um tipo de serviço não é encontrado no banco de dados """
+
+class ServiceTypeInactiveError(Exception):
+    """ Lança quando um tipo de serviço está inativo """
