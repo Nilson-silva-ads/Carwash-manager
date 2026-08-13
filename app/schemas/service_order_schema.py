@@ -1,15 +1,11 @@
 
-from fastapi import Depends
 from pydantic import BaseModel, Field, ConfigDict
 from datetime import datetime
 
-from app.dependencies.employee_dependencies import get_current_employee
-from app.models.base_model import BaseModel
-from app.models.employee import Employee
 
 
 class ServiceOrderCreateSchema(BaseModel):
-    plate: str = Field(..., length=1, max_length=10)
+    plate: str = Field(..., min_length=1, max_length=10)
     service_type_ids: list[int] = Field(..., min_length=1)
 
 
@@ -25,6 +21,7 @@ class ServiceOrderItemResponseSchema(BaseModel):
     id: int
     service_order_id: int
     service_type_id: int
+    service_type: ServiceTypeOrderResponseSchema
 
 class ServiceOrderResponseSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -34,4 +31,3 @@ class ServiceOrderResponseSchema(BaseModel):
     employee_id: int
     created_at: datetime
     items: list[ServiceOrderItemResponseSchema]
-    created_at: datetime = Field(default_factory=datetime.utcnow)                                                          

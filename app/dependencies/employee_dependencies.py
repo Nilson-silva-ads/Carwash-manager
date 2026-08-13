@@ -1,12 +1,13 @@
 from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from app.database.session import get_db
+
 from app.models.employee import Employee
 from app.core.auth import oauth2_scheme
 from app.core.security import decode_access_token
 
 from app.services.employee_service import EmployeeService
-from app.database.session import get_db
 from app.repositories.employee_repository import EmployeeRepository
 
 

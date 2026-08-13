@@ -15,3 +15,6 @@ class ServiceTypeNotFoundError(Exception):
 
 class ServiceTypeInactiveError(Exception):
     """ Lança quando um tipo de serviço está inativo """
+
+class ServiceOrderWithoutServicesError(Exception):
+    """ Lança quando não possuir um atendimento """

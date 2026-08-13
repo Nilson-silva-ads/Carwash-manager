@@ -6,7 +6,7 @@ from app.repositories.service_order_repositoy import ServiceOrderRepository
 from app.repositories.service_order_item_repository import ServiceOrderItemRepository
 from app.repositories.service_type_repository import ServiceTypeRepository
 
-from app.core.exceptions import ServiceTypeNotFoundError, ServiceTypeInactiveError
+from app.core.exceptions import ServiceTypeNotFoundError, ServiceTypeInactiveError, ServiceOrderWithoutServicesError
 
 from sqlalchemy.orm import Session
 
@@ -27,7 +27,7 @@ class ServiceOrderService:
         self.service_type_repository = service_type_repository
 
 
-    def validate_service_types(self, service_type_ids: list[int]):
+    def validate_service_types(self, service_type_ids: list[int]) -> list[ServiceType]:
         # Verifica se todos os IDs de tipos de serviço existem no banco de dados
         service_types = []
 
@@ -37,8 +37,12 @@ class ServiceOrderService:
             if service_type is None:
                 raise ServiceTypeNotFoundError(f"Tipo de serviço com ID {service_type_id} não encontrado.")
 
+            if not service_type_ids:
+                raise ServiceOrderWithoutServicesError(f"O atendimento deve possuir pelo menos um serviço.")
+
             if not service_type.is_active:
                 raise ServiceTypeInactiveError(f"Tipo de serviço com ID {service_type_id} está desativado.")
+        
 
             service_types.append(service_type)
 
@@ -47,10 +51,14 @@ class ServiceOrderService:
     def create_service_order(self, plate: str, employee_id: int, service_type_ids: list[int]) -> ServiceOrder:
         # Valida os tipos de serviço
 
+
         try:
             service_types = self.validate_service_types(service_type_ids) 
 
-            service_order = ServiceOrder( plate = plate, employee_id = employee_id)
+            service_order = ServiceOrder(
+                plate=plate.strip().upper(),
+                employee_id=employee_id,
+            )
 
             self.service_order_repository.create(service_order)
 

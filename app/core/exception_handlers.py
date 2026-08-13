@@ -43,3 +43,7 @@ def register_exception_handlers(app: FastAPI):
     @app.exception_handler(ServiceTypeInactiveError)
     async def service_type_inactive_exception_handler(request: Request, exc: ServiceTypeInactiveError):
         return create_error_response(status.HTTP_403_FORBIDDEN, exc)
+
+    @app.exception_handler(ServiceOrderWithoutServicesError)
+    async def service_order_without_service_handler(request: Request, exc: ServiceOrderWithoutServcesError):
+        return create_error_response(status.HTTP_400_BAD_REQUEST, exc)
