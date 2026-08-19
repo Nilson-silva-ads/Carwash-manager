@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 from datetime import datetime, timezone
 
-from app.core.exceptions import EmployeeNotFoundError, EmployeeInactiveError, InvalidCredentialsError,  EmployeeAlreadyExistsError, ServiceTypeInactiveError, ServiceTypeNotFoundError
+from app.core.exceptions import EmployeeNotFoundError, EmployeeInactiveError, InvalidCredentialsError,  EmployeeAlreadyExistsError, ServiceTypeInactiveError, ServiceTypeNotFoundError, ServiceOrderWithoutServicesError, UsernameAlreadyExistsError, ServiceTypeAlreadyExistsError, ServiceOrderNotFoundError  
 
 def create_error_response( status_code: int, exc: Exception) -> JSONResponse:
     return JSONResponse(
@@ -45,5 +45,17 @@ def register_exception_handlers(app: FastAPI):
         return create_error_response(status.HTTP_403_FORBIDDEN, exc)
 
     @app.exception_handler(ServiceOrderWithoutServicesError)
-    async def service_order_without_service_handler(request: Request, exc: ServiceOrderWithoutServcesError):
+    async def service_order_without_service_handler(request: Request, exc: ServiceOrderWithoutServicesError):
         return create_error_response(status.HTTP_400_BAD_REQUEST, exc)
+
+    @app.exception_handler(UsernameAlreadyExistsError)
+    async def username_already_exists_exception_handler(request: Request, exc: UsernameAlreadyExistsError):
+        return create_error_response(status.HTTP_409_CONFLICT, exc)
+
+    @app.exception_handler(ServiceTypeAlreadyExistsError)
+    async def service_type_already_exists_exception_handler(rquest: Request, exc: ServiceTypeAlreadyExistsError):
+        return create_error_response(status.HTTP_409_CONFLICT, exc)
+
+    @app.exception_handler(ServiceOrderNotFoundError)
+    async def service_order_not_found_exception_handler(request, exc: ServiceOrderNotFoundError):
+        return create_error_response(status.HTTP_404_NOT_FOUND, exc)

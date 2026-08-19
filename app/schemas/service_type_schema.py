@@ -1,6 +1,9 @@
 from pydantic import ConfigDict, Field, BaseModel
 
 
+class ServiceTypeCreateSchema(BaseModel):
+
+    name: str = Field(..., min_length=1, max_length=100)
 
 class ServiceTypeSchema(BaseModel):
 

@@ -1,4 +1,4 @@
-from sqlachemy import select
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.models.service_type import ServiceType

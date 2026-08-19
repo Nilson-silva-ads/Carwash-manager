@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends
 
-from app.dependencies.service_type_dependencies import (
-    get_current_admin,
-    get_service_type_service,
-)
+from app.dependencies.employee_dependencies import get_current_admin
+from app.dependencies.service_type_dependencies import get_service_type_service
+
 from app.models.employee import Employee
+
 from app.schemas.service_type_schema import (
     ServiceTypeCreateSchema,
     ServiceTypeResponseSchema,

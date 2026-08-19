@@ -1,11 +1,16 @@
 from fastapi import APIRouter, Depends
+from fastapi.security import OAuth2PasswordRequestForm
+
 from sqlalchemy.orm import Session
 
-from app.services.employee_service import EmployeeService, get_current_employee
+from app.services.employee_service import EmployeeService
 from app.schemas.auth_schema import LoginSchema, TokenSchema
 from app.core.security import create_access_token
-from app.dependencies.employee_dependencies import get_employee_service
+
+from app.dependencies.employee_dependencies import get_employee_service, get_current_employee
+
 from app.models.employee import Employee
+
 
 
 router = APIRouter(prefix="/employees", tags=["Employees"])
@@ -17,29 +22,22 @@ router = APIRouter(prefix="/employees", tags=["Employees"])
     response_model=TokenSchema,
 )
 def login(
-    login_data: LoginSchema,  #recebe os dados do login.
-    service: EmployeeService = Depends(get_employee_service),  #chama o employeeService.
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    service: EmployeeService = Depends(get_employee_service),
 ):
     employee = service.authenticate_employee(
-        username=login_data.username,
-        password=login_data.password,
+        username=form_data.username,
+        password=form_data.password,
     )
 
     token = create_access_token(
         data={
-        "sub": str(employee.id),
-        "username": employee.username,
+            "sub": str(employee.id),
+            "username": employee.username,
         }
-      )
+    )
 
-    return TokenSchema(token_type="bearer", access_token=token)
-
-
-
-@router.get("")
-def get_employees(
-    current_employee: Employee = Depends(get_current_employee),
-    service: EmployeeService = Depends(get_employee_service),
-):
-    employees = service.get_all_employes()
-    return employees
+    return TokenSchema(
+        token_type="bearer",
+        access_token=token,
+    )

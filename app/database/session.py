@@ -26,5 +26,11 @@ def get_db() -> Generator[Session, None, None]:
 
     try:
         yield db #Entrega essa sessão para a rota, enquanto a rota estiver executando, ela usa essa sessão. Quando a rota terminar continua no finally.
+        db.commit()
+
+    except Exception:
+        db.rollback()
+        raise
+
     finally:
         db.close() #A conexão sera fechada, idependentemente de ter dado certo ou errado.

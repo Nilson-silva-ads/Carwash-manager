@@ -14,7 +14,7 @@ class EmployeeService:
         #Logica para criar um Funcionario.
        
         if self.employee_repository.get_by_username(username):
-            raise ValueError(f"{username} já existe. Por favor, escolha outro.")
+            raise UsernameAlreadyExistsError(f"{username} já existe. Por favor, escolha outro.")
 
         employee = Employee(
             name=name,
@@ -25,22 +25,7 @@ class EmployeeService:
         return self.employee_repository.create(employee)
     
 
-    def authenticate_employee(self, username: str, password: str) -> Employee:
-            #Logica para autenticar um Funionario.
-            employee = self.employee_repository.get_by_username(username)
-    
-            if employee is None:
-                raise EmployeeAlreadyExistsError("Usuario ou senha invalidos.")
-    
-            if not verify_password(password, employee.password_hash):
-                raise EmployeeAlreadyExistsError("Usuario ou senha invalidos.")
-    
-            if not employee.is_active:
-                raise EmployeeInactiveError("Funcionario inativo")
-    
-            return employee
-
-
+   
     def get_all_employees(self) -> list[Employee]:
         return self.employee_repository.get_all()
 
@@ -96,8 +81,11 @@ class EmployeeService:
         password: str,
      ) -> Employee:
         
-        employee = self.employee_repository.get_by_username(username);
+        employee = self.employee_repository.get_by_username(username)
 
+        print("USERNAME", username)
+        print("EMPLOYEE", employee)
+        
         if employee is None:
             raise EmployeeNotFoundError("Usuario ou senha invalidos.")
 
