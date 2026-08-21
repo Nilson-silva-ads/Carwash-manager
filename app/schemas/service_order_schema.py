@@ -41,4 +41,12 @@ class ServiceOrderResponseSchema(BaseModel):
     items: list[ServiceOrderItemResponseSchema]
 
 
-
+class ServiceOrderFilterSchema(BaseModel):
+    start_date: datetime | None = None
+    end_date: datetime | None = None
+    plate: str | None = Field (
+        default=None,
+        min_length=1,
+        max_length=10,
+    )
+    employee_id: int | None = None

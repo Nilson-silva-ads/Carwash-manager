@@ -9,6 +9,8 @@ from app.repositories.service_type_repository import ServiceTypeRepository
 from app.core.exceptions import ServiceTypeNotFoundError, ServiceTypeInactiveError, ServiceOrderWithoutServicesError, ServiceOrderNotFoundError
 from sqlalchemy.orm import Session
 
+from datetime import datetime
+
 
 class ServiceOrderService:
 
@@ -107,3 +109,33 @@ class ServiceOrderService:
     def get_service_orders_by_employee(self, employee: str) -> list[ServiceOrder]:
 
         return self.service_order_repository.get_by_employee_id(employee)
+
+    def get_service_orders_by_date_range( self, start_date: datetime, end_date: datetime) -> list[ServiceOrder]:
+
+        if start_date > end_date:
+            raise ValueError( "A data inicial não pode ser maior que a data final." )
+
+        return self.service_order_repository.get_by_date_range( start_date, end_date)
+
+
+    def get_filtered_service_orders(
+            self,
+            plate: str | None=None,
+            employee_id: int | None=None,
+            start_date: datetime | None=None,
+            end_date: datetime | None=None,
+    ) -> list[ServiceOrder]:
+
+        if start_date is not None and end_date is not None:
+            if start_date > end_date:
+                raise ValueError( "A data inicial não pode ser maior que a data final.")
+
+        if plate is not None:
+            plate = plate.strip().upper()
+
+        return self.service_order_repository.get_filtered(
+            plate=plate,
+            employee_id=employee_id,
+            start_date=start_date,
+            end_date=end_date,
+        )

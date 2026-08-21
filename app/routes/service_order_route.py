@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, Query
+
+from datetime import datetime
 
 from app.dependencies.service_order_dependencies import get_service_order_service
 from app.dependencies.employee_dependencies import get_current_employee
@@ -27,10 +29,19 @@ def create_service_order(
 @router.get("", response_model=list[ServiceOrderResponseSchema])
 
 def get_service_orders(
+    plate: str | None = Query(default=None),
+    employee_id: int | None = Query(default=None),
+    start_date: datetime | None = Query(default=None),
+    end_date: datetime | None = Query(default=None),
     current_employee: Employee = Depends(get_current_employee),
     service: ServiceOrderService = Depends(get_service_order_service),
 ):
-    return service.get_all_service_orders()
+    return service.get_filtered_service_orders(
+        plate=plate,
+        employee_id=employee_id,
+        start_date=start_date,
+        end_date=end_date,
+    )
 
 
 @router.get("/plate/{plate}", response_model=list[ServiceOrderResponseSchema] )
