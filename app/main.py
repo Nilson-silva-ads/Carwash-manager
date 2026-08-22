@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
 from app.core.exception_handlers import register_exception_handlers
-from app.core.routes import employee_router, auth_router, service_order_router, service_type_router
+from app.core.routes import employee_router, auth_router, service_order_router, service_type_router, report_router
 
 
 app = FastAPI( 
@@ -19,3 +19,5 @@ app.include_router(auth_router)
 app.include_router(service_order_router)
 
 app.include_router(service_type_router)
+
+app.include_router(report_router)
