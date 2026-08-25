@@ -39,3 +39,49 @@ class ReportService:
                 for service_type_id, name, total in services_by_type
             ],
         }
+
+
+    
+
+    def get_monthly_service_order_report(
+        self,
+        year: int,
+    ):
+
+        monthly_data = self.report_repository.count_service_orders_by_month(
+            year=year
+        )
+
+        services_data = self.report_repository.count_services_by_month_and_type(
+            year=year
+        )
+
+        report = {}
+
+        for month, total in monthly_data:
+            report[int(month)] = {
+                "month": int(month),
+                "total_service_orders": total,
+                "services": [],
+            }
+
+        for month, service_type_id, name, total in services_data:
+
+            month = int(month)
+
+            if month not in report:
+                report[month] = {
+                    "month": month,
+                    "total_service_orders": 0,
+                    "services": [],
+                }
+
+            report[month]["services"].append(
+                {
+                    "service_type_id": service_type_id,
+                    "name": name,
+                    "total": total,
+                }
+            )
+
+        return list(report.values())

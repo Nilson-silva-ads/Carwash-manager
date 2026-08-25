@@ -84,3 +84,42 @@ class ReportRepository:
         result = self.session.execute(stmt)
 
         return result.all()
+
+    
+
+    def count_services_by_month_and_type(
+         self,
+        year: int,
+    ):
+        stmt = (
+            select(
+                extract("month", ServiceOrder.created_at),
+                ServiceType.id,
+                ServiceType.name,
+                func.count(ServiceOrderItem.id),
+            )
+            .join(
+                ServiceOrderItem,
+                ServiceOrderItem.service_order_id == ServiceOrder.id,
+            )
+            .join(
+                ServiceType,
+                ServiceType.id == ServiceOrderItem.service_type_id,
+            )
+            .where(
+                extract("year", ServiceOrder.created_at) == year
+            )
+            .group_by(
+                extract("month", ServiceOrder.created_at),
+                ServiceType.id,
+                ServiceType.name,
+            )
+            .order_by(
+                extract("month", ServiceOrder.created_at),
+                ServiceType.id,
+            )
+        )
+
+        result = self.session.execute(stmt)
+
+        return result.all()

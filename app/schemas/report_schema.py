@@ -11,3 +11,9 @@ class ServiceReportItemSchema(BaseModel):
 class ServiceOrderReportResponseSchema(BaseModel):
     total_service_orders: int
     services: list[ServiceReportItemSchema]
+
+
+class MonthlyServiceOrderReportSchema(BaseModel):
+    month: int
+    total_service_orders: int
+    services: list[ServiceReportItemSchema]
