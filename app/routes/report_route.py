@@ -2,7 +2,7 @@ from datetime import datetime
 
 from fastapi import APIRouter, Depends
 
-from app.dependencies.employee_dependencies import get_current_employee
+from app.dependencies.employee_dependencies import get_current_admin
 from app.dependencies.report_dependencies import get_report_service
 
 from app.models.employee import Employee
@@ -25,7 +25,7 @@ router = APIRouter(
 def get_service_order_report(
     start_date: datetime,
     end_date: datetime,
-    current_employee: Employee = Depends(get_current_employee),
+    current_admin: Employee = Depends(get_current_admin),
     service: ReportService = Depends(get_report_service),
 ):
     return service.get_service_order_report(
@@ -40,7 +40,7 @@ def get_service_order_report(
 )
 def get_monthly_service_order_report(
     year: int,
-    current_employee: Employee = Depends(get_current_employee),
+    current_admin: Employee = Depends(get_current_admin),
     service: ReportService = Depends(get_report_service),
 ):
 

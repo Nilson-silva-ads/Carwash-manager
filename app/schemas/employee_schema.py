@@ -3,7 +3,7 @@ from pydantic import BaseModel, Field, ConfigDict
 class EmployeeCreateSchema(BaseModel):
 
     name: str = Field(..., min_length=1, max_length=100)
-    username: str = Field(..., min_length=1, max_length=100)
+    username: str = Field(..., min_length=1, max_length=50)
     password: str = Field(..., min_length=6)
 
 class EmployeeResponseSchema(BaseModel):
@@ -20,4 +20,3 @@ class EmployeeUpdateSchema(BaseModel):
 
     name: str | None = Field(..., min_length=1, max_length=100)
     username: str = Field(..., min_length=1, max_length=50)
-    is_active: bool

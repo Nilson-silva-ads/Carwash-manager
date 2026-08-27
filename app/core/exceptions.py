@@ -1,7 +1,3 @@
-class EmployeeAlreadyExistsError(Exception):
-    """ Lança quando ja existe um funcionario com o mesmo username """
-    pass
-
 class EmployeeInactiveError(Exception):
     """ Lança quando um funcionario inativo tenta acessar o sistema """
     pass
@@ -36,3 +32,9 @@ class ServiceTypeAlreadyExistsError(Exception):
 
 class ServiceOrderNotFoundError(Exception):
     """ Lança erro quando um atendimento não é encontrado"""
+    pass
+
+
+class AdminRequiredError(Exception):
+    """Lança quando um usuário sem permissão administrativa tenta acessar um recurso."""
+    pass

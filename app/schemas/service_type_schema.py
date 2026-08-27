@@ -20,5 +20,5 @@ class ServiceTypeResponseSchema(BaseModel):
 
 class ServiceTypeUpdateSchema(BaseModel):
 
-    name: str | None = Field(..., min_length=1, max_length=100)
+    name: str | None = Field(None, min_length=1, max_length=100)
     is_active: bool | None = Field(None)

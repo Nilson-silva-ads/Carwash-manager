@@ -30,7 +30,7 @@ class BaseRepository(Generic[T]):  #Estamos dizendo que essa classe trabalha com
 
     def update(self, entity: T) -> T:
         entity = self.session.merge(entity)  #cria a estancia entity e usa o merge para atualizar.
-        self.session.commit()
+        self.session.flush()
         self.session.refresh(entity)
         return entity
 
@@ -41,6 +41,6 @@ class BaseRepository(Generic[T]):  #Estamos dizendo que essa classe trabalha com
             return False
 
         self.session.delete(entity)
-        self.session.commit()
+        self.session.flush()
 
         return True

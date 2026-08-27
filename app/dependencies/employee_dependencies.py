@@ -1,4 +1,4 @@
-from fastapi import Depends, HTTPException
+from fastapi import Depends
 from sqlalchemy.orm import Session
 
 from app.database.session import get_db
@@ -6,6 +6,7 @@ from app.database.session import get_db
 from app.models.employee import Employee
 from app.core.auth import oauth2_scheme
 from app.core.security import decode_access_token
+from app.core.exceptions import AdminRequiredError
 
 from app.services.employee_service import EmployeeService
 from app.repositories.employee_repository import EmployeeRepository
@@ -34,9 +35,8 @@ def get_current_admin(
 ) -> Employee:
 
     if not current_employee.is_admin:
-        raise HTTPException(
-            status_code=403,
-            detail="Acesso negado."
+        raise AdminRequiredError(
+           "Acesso permitido somente para administratores"
         )
 
     return current_employee

@@ -1,13 +1,19 @@
 from app.repositories.employee_repository import EmployeeRepository
+
 from app.models.employee import Employee
+
+
 from app.core.security import hash_password, verify_password
-from app.core.exceptions import EmployeeAlreadyExistsError, EmployeeInactiveError, EmployeeNotFoundError, UsernameAlreadyExistsError, InvalidCredentialsError
+from app.core.exceptions import EmployeeInactiveError, EmployeeNotFoundError, UsernameAlreadyExistsError, InvalidCredentialsError
 
 
 
 class EmployeeService:
 
-    def __init__(self, employee_repository: EmployeeRepository):
+    def __init__(
+            self,
+            employee_repository: EmployeeRepository,
+    ):
         self.employee_repository = employee_repository
 
     def create_employee(self, name: str, username: str, password: str) -> Employee:
@@ -36,15 +42,9 @@ class EmployeeService:
         employee = self.employee_repository.get_by_id(employee_id)
 
         if employee is None:
-            raise EmployeeNotFoundError()
-
-        existing_employee = self.employee_repository.get_by_id(employee_id)
-
-        if(
-            existing_employee and existing_employee.id != employee.id
-        ):
-
-            raise  UsernameAlreadyExistsError()
+            raise EmployeeNotFoundError(
+            f"Funcionário com ID {employee_id} não encontrado."
+            )
 
         return employee
 
@@ -53,7 +53,7 @@ class EmployeeService:
 
         employee = self.get_employee_by_id(employee_id)
 
-        if name is None:
+        if name is not None:
             employee.name = name  
 
         if username:
@@ -72,6 +72,15 @@ class EmployeeService:
 
         employee = self.get_employee_by_id(employee_id)
         employee.is_active = False
+        return self.employee_repository.update(employee)
+
+
+    def activate_employee(self, employee_id: int) -> Employee:
+
+        employee = self.get_employee_by_id(employee_id)
+
+        employee.is_active = True
+
         return self.employee_repository.update(employee)
 
 

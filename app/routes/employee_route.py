@@ -1,8 +1,5 @@
-from fastapi import Depends, APIRouter, HTTPException
-from sqlalchemy.orm import Session
+from fastapi import Depends, APIRouter
 
-from app.database.session import get_db
-from app.repositories.employee_repository import EmployeeRepository
 from app.services.employee_service import EmployeeService
 from app.schemas.employee_schema import EmployeeCreateSchema, EmployeeResponseSchema, EmployeeUpdateSchema
 from app.dependencies.employee_dependencies import get_employee_service, get_current_employee, get_current_admin
@@ -57,12 +54,7 @@ def get_employee_by_id(
 ):
     employee = service.get_employee_by_id(employee_id)
 
-    if employee is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Funcionario não encontrado.",
-            )
-
+   
     return EmployeeResponseSchema.model_validate(employee)
 
 
@@ -96,4 +88,18 @@ def deactivate_employee(
     service: EmployeeService = Depends(get_employee_service)
 ):
     employee = service.deactivate_employee(employee_id)
+    return EmployeeResponseSchema.model_validate(employee)
+
+
+@router.patch(
+    "/{employee_id}/activate",
+    response_model=EmployeeResponseSchema,
+)
+def activate_employee(
+    employee_id: int,
+    current_admin: Employee = Depends(get_current_admin),
+    service: EmployeeService = Depends(get_employee_service),
+):
+    employee = service.activate_employee(employee_id)
+
     return EmployeeResponseSchema.model_validate(employee)

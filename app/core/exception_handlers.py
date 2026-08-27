@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 from datetime import datetime, timezone
 
-from app.core.exceptions import EmployeeNotFoundError, EmployeeInactiveError, InvalidCredentialsError,  EmployeeAlreadyExistsError, ServiceTypeInactiveError, ServiceTypeNotFoundError, ServiceOrderWithoutServicesError, UsernameAlreadyExistsError, ServiceTypeAlreadyExistsError, ServiceOrderNotFoundError  
+from app.core.exceptions import EmployeeNotFoundError, EmployeeInactiveError, InvalidCredentialsError,  ServiceTypeInactiveError, ServiceTypeNotFoundError, ServiceOrderWithoutServicesError, UsernameAlreadyExistsError, ServiceTypeAlreadyExistsError, ServiceOrderNotFoundError, AdminRequiredError  
 
 def create_error_response( status_code: int, exc: Exception) -> JSONResponse:
     return JSONResponse(
@@ -27,11 +27,6 @@ def register_exception_handlers(app: FastAPI):
         return create_error_response(status.HTTP_403_FORBIDDEN, exc)
 
     
-    @app.exception_handler(EmployeeAlreadyExistsError)
-    async def employee_already_exists_exception_handler(request: Request, exc: EmployeeAlreadyExistsError):
-        return create_error_response(status.HTTP_409_CONFLICT, exc)
-
-
     @app.exception_handler(InvalidCredentialsError)
     async def invalid_credentials_exception_handler(request: Request, exc: InvalidCredentialsError):
         return create_error_response(status.HTTP_401_UNAUTHORIZED, exc)
@@ -53,9 +48,17 @@ def register_exception_handlers(app: FastAPI):
         return create_error_response(status.HTTP_409_CONFLICT, exc)
 
     @app.exception_handler(ServiceTypeAlreadyExistsError)
-    async def service_type_already_exists_exception_handler(rquest: Request, exc: ServiceTypeAlreadyExistsError):
+    async def service_type_already_exists_exception_handler(request: Request, exc: ServiceTypeAlreadyExistsError):
         return create_error_response(status.HTTP_409_CONFLICT, exc)
 
     @app.exception_handler(ServiceOrderNotFoundError)
-    async def service_order_not_found_exception_handler(request, exc: ServiceOrderNotFoundError):
+    async def service_order_not_found_exception_handler(request: Request, exc: ServiceOrderNotFoundError):
         return create_error_response(status.HTTP_404_NOT_FOUND, exc)
+
+
+    @app.exception_handler(AdminRequiredError)
+    async def admin_required_exception_handler(
+        request: Request,
+        exc: AdminRequiredError,
+    ):
+        return create_error_response(status.HTTP_403_FORBIDDEN, exc)

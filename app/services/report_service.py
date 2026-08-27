@@ -56,26 +56,26 @@ class ReportService:
             year=year
         )
 
-        report = {}
-
-        for month, total in monthly_data:
-            report[int(month)] = {
-                "month": int(month),
-                "total_service_orders": total,
+        report = {
+            month: {
+                "month": month,
+                "total_service_orders": 0,
                 "services": [],
             }
 
+            for month in range(1, 13)
+
+        }
+
+        for month, total in monthly_data:
+           month = int(month)
+
+           report[month]["total_service_orders"] = total
+
+        
         for month, service_type_id, name, total in services_data:
-
             month = int(month)
-
-            if month not in report:
-                report[month] = {
-                    "month": month,
-                    "total_service_orders": 0,
-                    "services": [],
-                }
-
+       
             report[month]["services"].append(
                 {
                     "service_type_id": service_type_id,

@@ -58,7 +58,7 @@ class ServiceOrderService:
         # Valida os tipos de serviço
 
 
-        try:
+        
             service_types = self.validate_service_types(service_type_ids) 
 
             service_order = ServiceOrder(
@@ -76,13 +76,8 @@ class ServiceOrderService:
 
                 self.service_order_item_repository.create(service_order_item)
 
-            self.session.commit()
-
             return service_order
 
-        except Exception:
-            self.session.rollback()
-            raise
 
 
 
@@ -93,8 +88,10 @@ class ServiceOrderService:
 
     def get_service_order_by_id(self, service_order_id: int) -> ServiceOrder:
 
+        
         service_order = self.service_order_repository.get_by_id(service_order_id)
 
+        
         if service_order is None:
             raise ServiceOrderNotFoundError(f"Atendimento com Id {service_order_id} não encontrado.")
 
@@ -106,9 +103,9 @@ class ServiceOrderService:
         return self.service_order_repository.get_by_plate(plate.strip().upper())
 
 
-    def get_service_orders_by_employee(self, employee: str) -> list[ServiceOrder]:
+    def get_service_orders_by_employee(self, employee_id: int) -> list[ServiceOrder]:
 
-        return self.service_order_repository.get_by_employee_id(employee)
+        return self.service_order_repository.get_by_employee_id(employee_id)
 
     def get_service_orders_by_date_range( self, start_date: datetime, end_date: datetime) -> list[ServiceOrder]:
 

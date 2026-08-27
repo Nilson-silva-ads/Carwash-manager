@@ -94,3 +94,18 @@ def deactivate_service_type(
     service_type = service.deactivate_service_type(service_type_id)
 
     return ServiceTypeResponseSchema.model_validate(service_type)
+
+
+@router.patch(
+    "/{service_type_id}/activate",
+    response_model=ServiceTypeResponseSchema,
+)
+def activate_service_type(
+    service_type_id: int,
+    current_admin: Employee = Depends(get_current_admin),
+    service: ServiceTypeService = Depends(get_service_type_service),
+):
+
+    service_type = service.activate_service_type(service_type_id)
+
+    return ServiceTypeResponseSchema.model_validate(service_type)
