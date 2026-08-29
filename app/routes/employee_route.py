@@ -33,7 +33,7 @@ def create_employee(
      )
 
 def get_employees(
-    current_employee: Employee = Depends(get_current_employee), #chama o get_current_employee, o FastApi chama get_current_employee automaticamente e entrega um resultado para a variavel current_employee;
+    current_admin: Employee = Depends(get_current_admin),
     service: EmployeeService = Depends(get_employee_service)  #chama o service, o FastApi chama get_employee_Service outomaticamente e entrega um resultado para a variavel service;   
 ):
 
@@ -42,6 +42,16 @@ def get_employees(
     return [EmployeeResponseSchema.model_validate(employee)
              for employee in employees]
 
+
+@router.get(
+        "/me",
+        response_model=EmployeeResponseSchema,
+)
+def get_current_employee_data(
+    current_employee: Employee = Depends(get_current_employee),
+):
+    return EmployeeResponseSchema.model_validate(current_employee)
+
 @router.get(
     "/{employee_id}",
     response_model=EmployeeResponseSchema,
@@ -49,7 +59,7 @@ def get_employees(
 
 def get_employee_by_id(
         employee_id: int,
-        current_employee: Employee = Depends(get_current_employee),
+        current_admin: Employee = Depends(get_current_admin),
         service: EmployeeService = Depends(get_employee_service)
 ):
     employee = service.get_employee_by_id(employee_id)
