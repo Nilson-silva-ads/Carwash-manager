@@ -59,7 +59,7 @@ export default function Dashboard() {
       setLastOrder(order);
       setPlate("");
       setSelected([]);
-      setMessage("Atendimento registrado com sucesso.");
+      setMessage("Veiculo registrado com sucesso.");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Não foi possível registrar o atendimento.");
     }

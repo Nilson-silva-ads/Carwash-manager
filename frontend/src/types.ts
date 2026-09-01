@@ -29,6 +29,13 @@ export type MonthlyReport = {
   services: ServiceReportItem[];
 };
 
+export type EmployeeMonthlyReport = {
+  year: number;
+  month: number;
+  total_service_orders: number;
+  employees: Array<{ employee_id: number; employee_name: string; total: number; services: ServiceReportItem[] }>;
+};
+
 export type ServiceOrder = {
   id: number;
   plate: string;

@@ -23,6 +23,7 @@ def create_employee(
         name=employee_data.name,
         username=employee_data.username,
         password=employee_data.password,
+        is_admin=employee_data.is_admin,
     )
 
     return EmployeeResponseSchema.model_validate(employee)

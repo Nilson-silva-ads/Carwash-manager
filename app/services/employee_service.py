@@ -16,7 +16,7 @@ class EmployeeService:
     ):
         self.employee_repository = employee_repository
 
-    def create_employee(self, name: str, username: str, password: str) -> Employee:
+    def create_employee(self, name: str, username: str, password: str, is_admin: bool = False) -> Employee:
         #Logica para criar um Funcionario.
        
         if self.employee_repository.get_by_username(username):
@@ -25,7 +25,8 @@ class EmployeeService:
         employee = Employee(
             name=name,
             username=username,
-            password_hash=hash_password(password)
+            password_hash=hash_password(password),
+            is_admin=is_admin,
         )
 
         return self.employee_repository.create(employee)

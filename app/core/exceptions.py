@@ -38,3 +38,7 @@ class ServiceOrderNotFoundError(Exception):
 class AdminRequiredError(Exception):
     """Lança quando um usuário sem permissão administrativa tenta acessar um recurso."""
     pass
+
+class InvalidServiceCombinationError(Exception):
+    """Lança quando serviços incompatíveis são combinados no mesmo carro."""
+    pass

@@ -6,10 +6,11 @@ from app.repositories.service_order_repository import ServiceOrderRepository
 from app.repositories.service_order_item_repository import ServiceOrderItemRepository
 from app.repositories.service_type_repository import ServiceTypeRepository
 
-from app.core.exceptions import ServiceTypeNotFoundError, ServiceTypeInactiveError, ServiceOrderWithoutServicesError, ServiceOrderNotFoundError
+from app.core.exceptions import ServiceTypeNotFoundError, ServiceTypeInactiveError, ServiceOrderWithoutServicesError, ServiceOrderNotFoundError, InvalidServiceCombinationError
 from sqlalchemy.orm import Session
 
 from datetime import datetime
+from app.core.timezone import to_utc
 
 
 class ServiceOrderService:
@@ -51,6 +52,15 @@ class ServiceOrderService:
         
 
             service_types.append(service_type)
+
+        # Um carro só pode ter vários serviços quando o serviço-base é o Kit.
+        if len(service_types) > 1 and not any(
+            service_type.name.strip().casefold() == "kit"
+            for service_type in service_types
+        ):
+            raise InvalidServiceCombinationError(
+                "Somente o Kit pode ser combinado com outros serviços."
+            )
 
         return service_types
 
@@ -112,7 +122,7 @@ class ServiceOrderService:
         if start_date > end_date:
             raise ValueError( "A data inicial não pode ser maior que a data final." )
 
-        return self.service_order_repository.get_by_date_range( start_date, end_date)
+        return self.service_order_repository.get_by_date_range(to_utc(start_date), to_utc(end_date))
 
 
     def get_filtered_service_orders(
@@ -129,6 +139,12 @@ class ServiceOrderService:
 
         if plate is not None:
             plate = plate.strip().upper()
+
+        if start_date is not None:
+            start_date = to_utc(start_date)
+
+        if end_date is not None:
+            end_date = to_utc(end_date)
 
         return self.service_order_repository.get_filtered(
             plate=plate,

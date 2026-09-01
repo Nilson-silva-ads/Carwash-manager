@@ -17,3 +17,23 @@ class MonthlyServiceOrderReportSchema(BaseModel):
     month: int = Field(..., ge=1, le=12)
     total_service_orders: int = Field(..., ge=0)
     services: list[ServiceReportItemSchema]
+
+
+class EmployeeMonthlyServiceSchema(BaseModel):
+    service_type_id: int
+    name: str
+    total: int = Field(..., ge=0)
+
+
+class EmployeeMonthlyItemSchema(BaseModel):
+    employee_id: int
+    employee_name: str
+    total: int = Field(..., ge=0)
+    services: list[EmployeeMonthlyServiceSchema]
+
+
+class EmployeeMonthlyReportResponseSchema(BaseModel):
+    year: int
+    month: int = Field(..., ge=1, le=12)
+    total_service_orders: int = Field(..., ge=0)
+    employees: list[EmployeeMonthlyItemSchema]

@@ -19,9 +19,14 @@ export default function NewServiceOrder() {
   }, []);
 
   function toggle(id: number) {
-    setSelected((current) =>
-      current.includes(id) ? current.filter((x) => x !== id) : [...current, id]
-    );
+    setSelected((current) => {
+      if (current.includes(id)) return current.filter((x) => x !== id);
+      const chosen = types.filter((type) => current.includes(type.id));
+      const clicked = types.find((type) => type.id === id);
+      const hasKit = chosen.some((type) => type.name.trim().toLowerCase() === "kit");
+      if (current.length && !hasKit && clicked?.name.trim().toLowerCase() !== "kit") return current;
+      return [...current, id];
+    });
   }
 
   async function submit(event: FormEvent) {
@@ -75,6 +80,7 @@ export default function NewServiceOrder() {
                 type="checkbox"
                 checked={selected.includes(type.id)}
                 onChange={() => toggle(type.id)}
+                disabled={selected.length > 0 && !selected.some((id) => types.find((item) => item.id === id)?.name.trim().toLowerCase() === "kit") && type.name.trim().toLowerCase() !== "kit"}
               />
               <span>{type.name}</span>
             </label>

@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 from datetime import datetime, timezone
 
-from app.core.exceptions import EmployeeNotFoundError, EmployeeInactiveError, InvalidCredentialsError,  ServiceTypeInactiveError, ServiceTypeNotFoundError, ServiceOrderWithoutServicesError, UsernameAlreadyExistsError, ServiceTypeAlreadyExistsError, ServiceOrderNotFoundError, AdminRequiredError  
+from app.core.exceptions import EmployeeNotFoundError, EmployeeInactiveError, InvalidCredentialsError, InvalidServiceCombinationError, ServiceTypeInactiveError, ServiceTypeNotFoundError, ServiceOrderWithoutServicesError, UsernameAlreadyExistsError, ServiceTypeAlreadyExistsError, ServiceOrderNotFoundError, AdminRequiredError
 
 def create_error_response( status_code: int, exc: Exception) -> JSONResponse:
     return JSONResponse(
@@ -41,6 +41,10 @@ def register_exception_handlers(app: FastAPI):
 
     @app.exception_handler(ServiceOrderWithoutServicesError)
     async def service_order_without_service_handler(request: Request, exc: ServiceOrderWithoutServicesError):
+        return create_error_response(status.HTTP_400_BAD_REQUEST, exc)
+
+    @app.exception_handler(InvalidServiceCombinationError)
+    async def invalid_service_combination_handler(request: Request, exc: InvalidServiceCombinationError):
         return create_error_response(status.HTTP_400_BAD_REQUEST, exc)
 
     @app.exception_handler(UsernameAlreadyExistsError)
