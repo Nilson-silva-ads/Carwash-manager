@@ -1,6 +1,7 @@
 #Ambiente virtual
 .venv/
 
+
 #Variaveis de ambiente
 .env/
 
