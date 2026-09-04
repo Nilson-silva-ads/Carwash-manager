@@ -54,7 +54,7 @@ export default function ServiceOrders() {
                 <td><strong>{order.plate}</strong></td>
                 <td>{order.employee?.name?? "Não informado"}</td>
                 <td> {order.items?.length? order.items.map((item) => item.service_type.name).join(", "): "Nenhum serviço" } </td>
-                <td>{new Date(`${order.created_at}Z`).toLocaleString("pt-BR")}</td>
+                <td>{new Date(order.created_at).toLocaleString("pt-BR", { timeZone: "America/Recife" })}</td>
               </tr>
             ))}
             {!orders.length && <tr><td colSpan={5} className="empty">Nenhum atendimento encontrado.</td></tr>}

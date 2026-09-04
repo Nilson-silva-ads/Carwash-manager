@@ -8,7 +8,7 @@ db = SessionLocal()
 admin = Employee(
     name="Nilson",
     username="nilsonADM",
-    password_hash=hash_password("12345"),
+    password_hash=hash_password("neojb86082165"),
     is_admin=True,
     is_active=True,
 )
