@@ -12,6 +12,12 @@ export type ServiceType = {
   is_active: boolean;
 };
 
+export type ServiceOrderItem = {
+  id?: number;
+  service_type_id?: number;
+  service_type: Pick<ServiceType, "id" | "name">;
+};
+
 export type ServiceReportItem = {
   service_type_id: number;
   name: string;
@@ -41,6 +47,7 @@ export type ServiceOrder = {
   plate: string;
   employee_id: number;
   employee?: Pick<Employee, "id" | "name">;
+  items?: ServiceOrderItem[];
   created_at: string;
   updated_at?: string;
 };
