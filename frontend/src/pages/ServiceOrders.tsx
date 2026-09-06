@@ -76,7 +76,7 @@ export default function ServiceOrders() {
 
       <div className="panel table-wrap">
         <table>
-          <thead><tr><th>ID</th><th>Placa</th><th>Funcionário</th><th>Serviços</th><th>Data</th>{employee?.is_admin && <th>Ações</th>}</tr></thead>
+          <thead><tr><th>ID</th><th>Placa</th><th>Funcionário</th><th>Serviços</th><th>Data</th>{employee?.is_admin && <th className="actions-column">Ações</th>}</tr></thead>
           <tbody>
             {orders.map((order) => (
               <tr key={order.id}>
@@ -85,7 +85,7 @@ export default function ServiceOrders() {
                 <td>{order.employee?.name?? "Não informado"}</td>
                 <td> {order.items?.length? order.items.map((item) => item.service_type.name).join(", "): "Nenhum serviço" } </td>
                 <td>{new Date(order.created_at).toLocaleString("pt-BR", { timeZone: "America/Recife" })}</td>
-                {employee?.is_admin && <td><button type="button" onClick={() => startEdit(order)}>Editar</button></td>}
+                {employee?.is_admin && <td className="actions-column"><button className="edit-button" type="button" onClick={() => startEdit(order)}>Editar</button></td>}
               </tr>
             ))}
             {!orders.length && <tr><td colSpan={employee?.is_admin ? 6 : 5} className="empty">Nenhum atendimento encontrado.</td></tr>}
