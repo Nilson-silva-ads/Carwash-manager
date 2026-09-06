@@ -88,6 +88,33 @@ class ServiceOrderService:
 
             return service_order
 
+    def update_service_order(
+        self,
+        service_order_id: int,
+        plate: str,
+        service_type_ids: list[int],
+    ) -> ServiceOrder:
+        """Atualiza placa e serviços de forma atômica (operação exclusiva de admin na rota)."""
+        service_order = self.get_service_order_by_id(service_order_id)
+        service_types = self.validate_service_types(service_type_ids)
+
+        service_order.plate = plate.strip().upper()
+        for item in list(service_order.items):
+            self.session.delete(item)
+        self.session.flush()
+
+        for service_type in service_types:
+            self.service_order_item_repository.create(
+                ServiceOrderItem(
+                    service_order_id=service_order.id,
+                    service_type_id=service_type.id,
+                )
+            )
+
+        self.session.flush()
+        self.session.expire(service_order, ["items"])
+        return service_order
+
 
 
 

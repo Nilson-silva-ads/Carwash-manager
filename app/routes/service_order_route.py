@@ -3,11 +3,11 @@ from fastapi import APIRouter, Depends, status, Query
 from datetime import datetime
 
 from app.dependencies.service_order_dependencies import get_service_order_service
-from app.dependencies.employee_dependencies import get_current_employee
+from app.dependencies.employee_dependencies import get_current_admin, get_current_employee
 
 from app.models.employee import Employee
 
-from app.schemas.service_order_schema import ServiceOrderCreateSchema, ServiceOrderResponseSchema
+from app.schemas.service_order_schema import ServiceOrderCreateSchema, ServiceOrderResponseSchema, ServiceOrderUpdateSchema
 
 from app.services.service_order_service import ServiceOrderService
 
@@ -76,5 +76,19 @@ def get_service_order_by_id(
     service: ServiceOrderService = Depends(get_service_order_service),
 ):
         return service.get_service_order_by_id(service_order_id)
+
+
+@router.put("/{service_order_id}", response_model=ServiceOrderResponseSchema)
+def update_service_order(
+    service_order_id: int,
+    service_order_data: ServiceOrderUpdateSchema,
+    current_admin: Employee = Depends(get_current_admin),
+    service: ServiceOrderService = Depends(get_service_order_service),
+):
+    return service.update_service_order(
+        service_order_id=service_order_id,
+        plate=service_order_data.plate,
+        service_type_ids=service_order_data.service_type_ids,
+    )
 
 

@@ -21,6 +21,11 @@ class ServiceOrderCreateSchema(BaseModel):
     service_type_ids: list[int] = Field(..., min_length=1)
 
 
+class ServiceOrderUpdateSchema(BaseModel):
+    plate: str = Field(..., min_length=1, max_length=10)
+    service_type_ids: list[int] = Field(..., min_length=1)
+
+
 
 class ServiceOrderItemResponseSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
