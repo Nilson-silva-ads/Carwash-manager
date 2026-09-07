@@ -93,14 +93,11 @@ class EmployeeService:
         
         employee = self.employee_repository.get_by_username(username)
 
-        print("USERNAME", username)
-        print("EMPLOYEE", employee)
-        
         if employee is None:
-            raise EmployeeNotFoundError("Usuario ou senha invalidos.")
+            raise InvalidCredentialsError("Usuário ou senha inválidos.")
 
         if not verify_password(password, employee.password_hash): 
-            raise EmployeeNotFoundError("Usuario ou senha invalidos.") 
+            raise InvalidCredentialsError("Usuário ou senha inválidos.")
 
         if not employee.is_active:
             raise EmployeeInactiveError("Funcionario inativo.")
@@ -114,7 +111,10 @@ class EmployeeService:
         if sub is None:
             raise InvalidCredentialsError("Token Inválido")
 
-        employee_id = int(sub)
+        try:
+            employee_id = int(sub)
+        except (TypeError, ValueError):
+            raise InvalidCredentialsError("Token inválido ou expirado.")
 
         employee = self.employee_repository.get_by_id(employee_id)
 

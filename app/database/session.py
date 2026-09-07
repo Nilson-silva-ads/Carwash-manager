@@ -9,7 +9,7 @@ from app.database.config import DATABASE_URL
 #Cria a concxão com o banco.
 engine = create_engine(
     DATABASE_URL,
-    echo=True, #faz o SQLAlchemy  mostrar no terminal todo o SQL que ele executa.
+    echo=False,
 )
 
 #Cria uma nova sessão, sempre que precisar conversar com o banco.

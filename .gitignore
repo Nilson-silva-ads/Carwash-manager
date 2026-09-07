@@ -3,7 +3,9 @@
 
 
 #Variaveis de ambiente
-.env/
+.env
+.env.*
+!.env.example
 
 #Cache do python
 __pycache__/

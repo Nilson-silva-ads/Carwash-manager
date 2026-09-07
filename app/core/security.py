@@ -2,20 +2,17 @@ import bcrypt
 
 from datetime import datetime, timedelta, timezone
 from jose import jwt
+from app.core.exceptions import InvalidCredentialsError
 from app.core.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 
 
 def hash_password(password: str) -> str:
-    #implementação de hashing de senha (exemplo simples, não seguro para produçao)
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
 def verify_password(password: str, password_hash: str) -> bool:
-    #implementação de verificação de senha.
     return bcrypt.checkpw(password.encode('utf-8'), password_hash.encode('utf-8'))
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None) -> str:
-    #implementação de criação de token de acesso.
-    
     to_encode = data.copy()
 
     if expires_delta is None:
@@ -31,10 +28,9 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None) -> s
 
 
 def decode_access_token(token: str) -> dict:
-#implementação de decodificação de token de acesso.
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload
 
     except jwt.JWTError:
-        raise ValueError("Token invalido.")
+        raise InvalidCredentialsError("Token inválido ou expirado.")
