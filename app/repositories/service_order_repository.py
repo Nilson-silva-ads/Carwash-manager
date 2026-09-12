@@ -20,6 +20,27 @@ class ServiceOrderRepository(BaseRepository[ServiceOrder]):
         return result.scalars().all()
 
 
+    def get_by_plate_and_date(
+        self,
+        plate: str,
+        start_date: datetime,
+        end_date: datetime,
+    ) -> list[ServiceOrder]:
+        stmt = (
+            select(self.model)
+            .where(
+                self.model.plate == plate,
+                self.model.created_at >= start_date,
+                self.model.created_at < end_date,
+            )
+            .order_by(desc(self.model.created_at))
+        )
+
+        result = self.session.execute(stmt)
+
+        return result.scalars().all()
+
+
     def get_by_employee_id(self, employee_id: int) -> list[ServiceOrder]:
         stmt = (
             select(self.model).where(self.model.employee_id == employee_id).order_by(desc(self.model.created_at))

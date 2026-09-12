@@ -39,6 +39,10 @@ class AdminRequiredError(Exception):
     """Lança quando um usuário sem permissão administrativa tenta acessar um recurso."""
     pass
 
+class ServiceOrderPlateAlreadyRegisteredError(Exception):
+    """Lança quando a placa já possui atendimento no dia local atual."""
+    pass
+
 class InvalidServiceCombinationError(Exception):
     """Lança quando serviços incompatíveis são combinados no mesmo carro."""
     pass

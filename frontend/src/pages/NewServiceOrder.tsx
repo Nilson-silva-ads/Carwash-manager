@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import PageHeader from "../components/PageHeader";
 import { apiFetch } from "../api";
 import type { ServiceType } from "../types";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function NewServiceOrder() {
   const navigate = useNavigate();
@@ -11,11 +12,13 @@ export default function NewServiceOrder() {
   const [selected, setSelected] = useState<number[]>([]);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     apiFetch<ServiceType[]>("/service-types")
       .then(setTypes)
-      .catch((err) => setError(err.message));
+      .catch((err) => setError(err.message)).finally(() => setLoading(false));
   }, []);
 
   function toggle(id: number) {
@@ -39,6 +42,7 @@ export default function NewServiceOrder() {
       return;
     }
 
+    setSaving(true);
     try {
       await apiFetch("/service-orders", {
         method: "POST",
@@ -53,7 +57,7 @@ export default function NewServiceOrder() {
       setTimeout(() => navigate("/service-orders"), 700);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro ao criar atendimento.");
-    }
+    } finally { setSaving(false); }
   }
 
   return (
@@ -74,7 +78,7 @@ export default function NewServiceOrder() {
 
         <label>Tipos de serviço</label>
         <div className="check-grid">
-          {types.filter((type) => type.is_active).map((type) => (
+          {loading ? <LoadingSpinner /> : types.filter((type) => type.is_active).map((type) => (
             <label key={type.id} className={`check-card ${selected.includes(type.id) ? "selected" : ""}`}>
               <input
                 type="checkbox"
@@ -87,7 +91,7 @@ export default function NewServiceOrder() {
           ))}
         </div>
 
-        <button className="primary" type="submit">Registrar atendimento</button>
+        <button className="primary" type="submit" disabled={saving || loading}>{saving ? <LoadingSpinner label="Registrando" /> : "Registrar atendimento"}</button>
       </form>
     </>
   );

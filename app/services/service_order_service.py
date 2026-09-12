@@ -6,11 +6,11 @@ from app.repositories.service_order_repository import ServiceOrderRepository
 from app.repositories.service_order_item_repository import ServiceOrderItemRepository
 from app.repositories.service_type_repository import ServiceTypeRepository
 
-from app.core.exceptions import ServiceTypeNotFoundError, ServiceTypeInactiveError, ServiceOrderWithoutServicesError, ServiceOrderNotFoundError, InvalidServiceCombinationError
+from app.core.exceptions import ServiceTypeNotFoundError, ServiceTypeInactiveError, ServiceOrderWithoutServicesError, ServiceOrderNotFoundError, ServiceOrderPlateAlreadyRegisteredError, InvalidServiceCombinationError
 from sqlalchemy.orm import Session
 
-from datetime import datetime
-from app.core.timezone import to_utc
+from datetime import datetime, timedelta
+from app.core.timezone import to_utc, BRAZIL_TZ
 
 
 class ServiceOrderService:
@@ -64,29 +64,39 @@ class ServiceOrderService:
 
         return service_types
 
+
+
     def create_service_order(self, plate: str, employee_id: int, service_type_ids: list[int]) -> ServiceOrder:
-        # Valida os tipos de serviço
+        normalized_plate = plate.strip().upper()
+        start_recife = datetime.now(BRAZIL_TZ).replace(hour=0, minute=0, second=0, microsecond=0)
+        end_recife = start_recife + timedelta(days=1)
 
-
-        
-            service_types = self.validate_service_types(service_type_ids) 
-
-            service_order = ServiceOrder(
-                plate=plate.strip().upper(),
-                employee_id=employee_id,
+        existing_orders = self.service_order_repository.get_by_plate_and_date(
+            plate=normalized_plate,
+            start_date=to_utc(start_recife),
+            end_date=to_utc(end_recife),
+        )
+        if existing_orders:
+            raise ServiceOrderPlateAlreadyRegisteredError(
+                f"A placa {normalized_plate} já foi cadastrada hoje."
             )
 
-            self.service_order_repository.create(service_order)
+        service_types = self.validate_service_types(service_type_ids)
+        service_order = ServiceOrder(plate=normalized_plate, employee_id=employee_id)
 
-            for service_type in service_types:
-                service_order_item = ServiceOrderItem(
-                    service_order_id = service_order.id,
-                    service_type_id = service_type.id,
-                )
+        self.service_order_repository.create(service_order)
 
-                self.service_order_item_repository.create(service_order_item)
+        for service_type in service_types:
+            service_order_item = ServiceOrderItem(
+                service_order_id=service_order.id,
+                service_type_id=service_type.id,
+            )
 
-            return service_order
+            self.service_order_item_repository.create(service_order_item)
+
+        return service_order
+
+
 
     def update_service_order(
         self,

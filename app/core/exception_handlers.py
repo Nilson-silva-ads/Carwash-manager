@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 from datetime import datetime, timezone
 
-from app.core.exceptions import EmployeeNotFoundError, EmployeeInactiveError, InvalidCredentialsError, InvalidServiceCombinationError, ServiceTypeInactiveError, ServiceTypeNotFoundError, ServiceOrderWithoutServicesError, UsernameAlreadyExistsError, ServiceTypeAlreadyExistsError, ServiceOrderNotFoundError, AdminRequiredError
+from app.core.exceptions import EmployeeNotFoundError, EmployeeInactiveError, InvalidCredentialsError, InvalidServiceCombinationError, ServiceTypeInactiveError, ServiceTypeNotFoundError, ServiceOrderWithoutServicesError, UsernameAlreadyExistsError, ServiceTypeAlreadyExistsError, ServiceOrderNotFoundError, ServiceOrderPlateAlreadyRegisteredError, AdminRequiredError
 
 def create_error_response( status_code: int, exc: Exception) -> JSONResponse:
     return JSONResponse(
@@ -58,6 +58,10 @@ def register_exception_handlers(app: FastAPI):
     @app.exception_handler(ServiceOrderNotFoundError)
     async def service_order_not_found_exception_handler(request: Request, exc: ServiceOrderNotFoundError):
         return create_error_response(status.HTTP_404_NOT_FOUND, exc)
+
+    @app.exception_handler(ServiceOrderPlateAlreadyRegisteredError)
+    async def service_order_plate_already_registered_handler(request: Request, exc: ServiceOrderPlateAlreadyRegisteredError):
+        return create_error_response(status.HTTP_409_CONFLICT, exc)
 
 
     @app.exception_handler(AdminRequiredError)
