@@ -62,6 +62,18 @@ export default function ServiceOrders() {
     } catch (err) { setError(err instanceof Error ? err.message : "Erro ao atualizar atendimento."); }
   }
 
+  async function deleteOrder(order: ServiceOrder) {
+    if (!window.confirm(`Excluir o atendimento #${order.id} da placa ${order.plate}?`)) return;
+
+    setError("");
+    try {
+      await apiFetch<void>(`/service-orders/${order.id}`, { method: "DELETE" });
+      await search();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro ao excluir atendimento.");
+    }
+  }
+
   return (
     <>
       <PageHeader title="Atendimentos" description="Consulte os veiculos registrados." />
@@ -85,7 +97,10 @@ export default function ServiceOrders() {
                 <td>{order.employee?.name?? "Não informado"}</td>
                 <td> {order.items?.length? order.items.map((item) => item.service_type.name).join(", "): "Nenhum serviço" } </td>
                 <td>{new Date(order.created_at).toLocaleString("pt-BR", { timeZone: "America/Recife" })}</td>
-                {employee?.is_admin && <td className="actions-column"><button className="edit-button" type="button" onClick={() => startEdit(order)}>Editar</button></td>}
+                {employee?.is_admin && <td className="actions-column">
+                  <button className="edit-button" type="button" onClick={() => startEdit(order)}>Editar</button>
+                  <button className="delete-button" type="button" onClick={() => deleteOrder(order)}>Excluir</button>
+                </td>}
               </tr>
             ))}
             {!orders.length && <tr><td colSpan={employee?.is_admin ? 6 : 5} className="empty">Nenhum atendimento encontrado.</td></tr>}

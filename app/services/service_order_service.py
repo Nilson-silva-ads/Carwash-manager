@@ -125,6 +125,16 @@ class ServiceOrderService:
         self.session.expire(service_order, ["items"])
         return service_order
 
+    def delete_service_order(self, service_order_id: int) -> None:
+        """Exclui um atendimento e seus itens relacionados atomically."""
+        service_order = self.get_service_order_by_id(service_order_id)
+
+        for item in list(service_order.items):
+            self.session.delete(item)
+        self.session.flush()
+        self.session.delete(service_order)
+        self.session.flush()
+
 
 
 

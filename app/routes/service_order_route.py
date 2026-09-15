@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status, Query
+from fastapi import APIRouter, Depends, status, Query, Response
 
 from datetime import datetime
 
@@ -90,5 +90,15 @@ def update_service_order(
         plate=service_order_data.plate,
         service_type_ids=service_order_data.service_type_ids,
     )
+
+
+@router.delete("/{service_order_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_service_order(
+    service_order_id: int,
+    current_admin: Employee = Depends(get_current_admin),
+    service: ServiceOrderService = Depends(get_service_order_service),
+):
+    service.delete_service_order(service_order_id)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
