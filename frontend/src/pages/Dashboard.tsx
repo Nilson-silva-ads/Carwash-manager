@@ -13,6 +13,7 @@ export default function Dashboard() {
   const [selected, setSelected] = useState<number[]>([]);
   const [lastOrder, setLastOrder] = useState<ServiceOrder | null>(null);
   const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
@@ -40,6 +41,8 @@ export default function Dashboard() {
 
   async function registerServiceOrder(event: FormEvent) {
     event.preventDefault();
+    if (submitting) return;
+
     setError("");
     setMessage("");
 
@@ -48,6 +51,7 @@ export default function Dashboard() {
       return;
     }
 
+    setSubmitting(true);
     try {
       const order = await apiFetch<ServiceOrder>("/service-orders", {
         method: "POST",
@@ -62,6 +66,8 @@ export default function Dashboard() {
       setMessage("Veiculo registrado com sucesso.");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Não foi possível registrar o atendimento.");
+    } finally {
+      setSubmitting(false);
     }
   }
 
@@ -111,7 +117,9 @@ export default function Dashboard() {
                 </label>
               ))}
             </div>
-            <button className="primary" type="submit" disabled={loading}>Registrar atendimento</button>
+            <button className="primary" type="submit" disabled={loading || submitting}>
+              {submitting ? "Cadastrando..." : "Registrar atendimento"}
+            </button>
           </form>
 
           <aside className="panel last-vehicle">
