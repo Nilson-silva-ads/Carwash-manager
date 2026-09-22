@@ -24,3 +24,6 @@ data/*.sqlite3
 #Arquivos do sistemas
 .Ds_Store
 Thumbs.db
+
+# Build do frontend
+frontend/dist/

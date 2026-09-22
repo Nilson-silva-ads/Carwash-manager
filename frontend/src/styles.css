@@ -103,7 +103,22 @@ th { color: #718096; font-size: 12px; text-transform: uppercase; }
   .content { padding: 18px; }
   .page-header { align-items: flex-start; }
   .page-header h1 { font-size: 23px; }
+
   .filters { grid-template-columns: 1fr; }
+
+  .filters input,
+  .filters button {
+    width: 100%;
+    mins-height: 46px;
+  }
+  .filters input {
+    font-size: 16px;
+  }
+  .filters .primary {
+    min-height: 48px;
+    font-size: 15px;
+  }
+
   .check-grid { grid-template-columns: 1fr; }
   .table-wrap { padding: 14px 0 14px 14px; }
   .table-wrap table { min-width: 680px; }

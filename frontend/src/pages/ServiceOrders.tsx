@@ -78,7 +78,20 @@ export default function ServiceOrders() {
     <>
       <PageHeader title="Atendimentos" description="Consulte os veiculos registrados." />
       <form className="panel filters" onSubmit={search}>
-        <div><label>Placa</label><input value={plate} onChange={(e) => setPlate(e.target.value)} placeholder="ABC1234" /></div>
+        <div>
+        
+          <label>Placa</label>
+          <input
+           value={plate}
+           onChange={(e) =>
+           setPlate(e.target.value.replace(/\s/g, "").toUpperCase() )
+           }
+           placeholder="ABC1234"
+           maxLength={10}
+           autoCapitalize="characters"
+           />
+        
+        </div>
         <div><label>Data inicial</label><input type="date" value={start} onChange={(e) => setStart(e.target.value)} /></div>
         <div><label>Data final</label><input type="date" value={end} onChange={(e) => setEnd(e.target.value)} /></div>
         <button className="primary" type="submit">Pesquisar</button>
@@ -111,7 +124,17 @@ export default function ServiceOrders() {
         <h2>Editar atendimento #{editing.id}</h2>
         <form onSubmit={saveEdit}>
           <label>Placa</label>
-          <input value={editPlate} onChange={(e) => setEditPlate(e.target.value)} maxLength={10} required />
+          <input
+          
+          value={editPlate}
+          onChange={(e) => 
+            setEditPlate(e.target.value.replace(/\s/g, "").toUpperCase() )
+          }
+          maxLength={10}
+          autoCapitalize="characters"
+          required 
+          
+          />
           <label>Serviços</label>
           <div>{serviceTypes.map((type) => <label key={type.id}><input type="checkbox" checked={editServiceIds.includes(type.id)} onChange={(e) => setEditServiceIds((ids) => e.target.checked ? [...ids, type.id] : ids.filter((id) => id !== type.id))} /> {type.name}</label>)}</div>
           <button className="primary" type="submit">Salvar alterações</button>
