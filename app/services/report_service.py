@@ -2,7 +2,7 @@ from datetime import datetime
 
 from app.repositories.report_repository import ReportRepository
 from app.core.timezone import to_utc
-
+from app.core.timezone import BRAZIL_TZ
 
 class ReportService:
 
@@ -44,7 +44,59 @@ class ReportService:
         }
 
 
-    
+    def get_dashboard_report(self):       
+
+        now = datetime.now(BRAZIL_TZ)
+
+        today_start = now.replace(
+            hour=0,
+            minute=0,
+            second=0,
+            microsecond=0,
+        )
+
+        month_start = now.replace(
+            day=1,
+            hour=0,
+            minute=0,
+            second=0,
+            microsecond=0,
+        )
+
+        today_start_utc = to_utc(today_start)
+        month_start_utc = to_utc(month_start)
+        now_utc = to_utc(now)
+
+        today_total = self.report_repository.count_service_orders(
+            start_date=today_start_utc,
+            end_date=now_utc,
+        )
+
+        month_total = self.report_repository.count_service_orders(
+            start_date=month_start_utc,
+            end_date=now_utc,
+        )
+
+        services_data = self.report_repository.count_services_by_type(
+            start_date=today_start_utc,
+            end_date=now_utc,
+        )
+
+        services = [
+            {
+                "service_type_id": service_type_id,
+                "name": name,
+                "total": total,
+            }
+            for service_type_id, name, total in services_data
+        ]
+
+        return {
+            "today": today_total,
+            "month": month_total,
+            "services": services,
+        }
+
 
     def get_monthly_service_order_report(
         self,

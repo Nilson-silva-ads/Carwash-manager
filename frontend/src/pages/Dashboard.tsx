@@ -5,11 +5,11 @@ import {
   Car,
   CarFront,
   Camera,
+  ChevronRight,
   CircleDot,
   Droplets,
   Gift,
-  Plus,
-  Search,
+  Server,
   Sparkles,
   Store,
   Wrench,
@@ -102,6 +102,18 @@ function isWashingType(name: string) {
   );
 }
 
+type DashboardService = {
+  service_type_id: number;
+  name: string;
+  total: number;
+};
+
+type DashboardReport = {
+  today: number;
+  month: number;
+  services: DashboardService[];
+};
+
 export default function Dashboard() {
   const { employee } = useAuth();
 
@@ -115,6 +127,26 @@ export default function Dashboard() {
 
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+
+  const [adminTodayTotal, setAdminTodayTotal] = useState<number | null>(
+    null
+  );
+
+  const [adminServices, setAdminServices] = useState<DashboardService[]>(
+    []
+  );
+
+  const [apiStatus, setApiStatus] = useState<
+    "loading" | "connected" | "offline"
+  >("loading");
+
+  const [adminStatsLoading, setAdminStatsLoading] = useState(false);
+
+  /*
+   * ============================================================
+   * DASHBOARD DO FUNCIONÁRIO
+   * ============================================================
+   */
 
   useEffect(() => {
     if (!employee || employee.is_admin) return;
@@ -145,6 +177,57 @@ export default function Dashboard() {
       .finally(() => {
         setLoading(false);
       });
+  }, [employee]);
+
+  /*
+   * ============================================================
+   * DASHBOARD DO ADMINISTRADOR
+   * ============================================================
+   */
+
+  useEffect(() => {
+    if (!employee?.is_admin) return;
+
+    let cancelled = false;
+
+    async function loadAdminDashboard() {
+      setAdminStatsLoading(true);
+      setApiStatus("loading");
+      setAdminServices([]);
+
+      try {
+        const dashboard = await apiFetch<DashboardReport>(
+          "/reports/dashboard"
+        );
+
+        if (cancelled) return;
+
+        setAdminTodayTotal(dashboard.today);
+        setAdminServices(dashboard.services ?? []);
+        setApiStatus("connected");
+      } catch (err) {
+        if (cancelled) return;
+
+        setAdminTodayTotal(null);
+        setAdminServices([]);
+        setApiStatus("offline");
+
+        console.error(
+          "Erro ao carregar dashboard administrativo:",
+          err
+        );
+      } finally {
+        if (!cancelled) {
+          setAdminStatsLoading(false);
+        }
+      }
+    }
+
+    loadAdminDashboard();
+
+    return () => {
+      cancelled = true;
+    };
   }, [employee]);
 
   function toggleService(id: number) {
@@ -225,67 +308,147 @@ export default function Dashboard() {
     (type) => !isWashingType(type.name)
   );
 
+  /*
+   * ============================================================
+   * RENDER
+   * ============================================================
+   */
+
   return (
     <>
       {employee?.is_admin ? (
-        <>
+        /*
+         * ======================================================
+         * ADMINISTRADOR
+         * ======================================================
+         */
+        <div className="admin-dashboard">
           <PageHeader
             title={`Olá, ${employee?.name || employee?.username}!`}
             description="Visão geral do Carwash Manager."
           />
 
-          <div className="cards">
-            <div className="stat-card">
-              <div className="stat-icon">
-                <Car />
-              </div>
-
-              <div>
-                <span>Atendimentos</span>
-                <strong>Consulte os registros</strong>
-              </div>
-            </div>
-
-            <div className="stat-card">
-              <div className="stat-icon">
-                <Search />
-              </div>
-
-              <div>
-                <span>Operação</span>
-                <strong>Sistema conectado à API</strong>
-              </div>
-            </div>
-          </div>
-
-          <div className="quick-grid">
-            <Link
-              to="/service-orders/new"
-              className="quick-card"
-            >
-              <Plus />
-              <strong>Novo atendimento</strong>
-              <span>Registrar uma lavagem</span>
-            </Link>
-
+          <div className="admin-stat-list">
+            {/* ATENDIMENTOS DE HOJE */}
             <Link
               to="/service-orders"
-              className="quick-card"
+              className="admin-stat-card"
             >
-              <Search />
-              <strong>Consultar atendimentos</strong>
-              <span>
-                Pesquisar por placa, funcionário ou data
-              </span>
+              <div className="admin-stat-icon">
+                <Car size={30} strokeWidth={2} />
+              </div>
+
+              <div className="admin-stat-content">
+                <span>Atendimentos hoje</span>
+
+                <strong>
+                  {adminStatsLoading
+                    ? "..."
+                    : adminTodayTotal !== null
+                      ? adminTodayTotal
+                      : "--"}
+                </strong>
+              </div>
+
+              <ChevronRight
+                className="admin-stat-arrow"
+                size={28}
+              />
             </Link>
+
+            {/* STATUS DA API */}
+            <div className="admin-stat-card">
+              <div className="admin-stat-icon">
+                <Server size={30} strokeWidth={2} />
+              </div>
+
+              <div className="admin-stat-content">
+                <span>Operação</span>
+
+                <strong>
+                  Sistema conectado à API
+                </strong>
+
+                <div
+                  className={`api-status ${
+                    apiStatus === "connected"
+                      ? "connected"
+                      : apiStatus === "offline"
+                        ? "offline"
+                        : "checking"
+                  }`}
+                >
+                  <span className="api-status-dot" />
+
+                  {apiStatus === "connected"
+                    ? "Conectado"
+                    : apiStatus === "offline"
+                      ? "Sem conexão"
+                      : "Verificando..."}
+                </div>
+              </div>
+            </div>
           </div>
-        </>
+
+          {/* SERVIÇOS REALIZADOS HOJE */}
+          <section className="admin-services-summary">
+            <div className="admin-services-header">
+              <div>
+                <h2>Serviços realizados hoje</h2>
+                <p>
+                  Quantidade por tipo de serviço
+                </p>
+              </div>
+            </div>
+
+            {adminStatsLoading ? (
+              <div className="admin-services-loading">
+                <span className="loading-spinner" />
+                <span>Carregando serviços...</span>
+              </div>
+            ) : adminServices.length > 0 ? (
+              <div className="admin-services-list">
+                {adminServices.map((service) => (
+                  <div
+                    key={service.service_type_id}
+                    className="admin-service-row"
+                  >
+                    <div className="admin-service-info">
+                      <span className="admin-service-icon">
+                        {getServiceIcon(service.name)}
+                      </span>
+
+                      <span className="admin-service-name">
+                        {service.name}
+                      </span>
+                    </div>
+
+                    <strong className="admin-service-total">
+                      {service.total}
+                    </strong>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="admin-services-empty">
+                <span>Nenhum serviço realizado hoje.</span>
+              </div>
+            )}
+          </section>
+        </div>
       ) : (
+        /*
+         * ======================================================
+         * FUNCIONÁRIO
+         * ======================================================
+         */
         <div className="mobile-service-page">
           <div className="service-page-top">
             <div className="service-page-header">
               <h1>Cadastrar veículo e atendimento</h1>
-              <p>Informe a placa e os serviços realizados</p>
+              <p>
+                Informe a placa e os serviços realizados
+              </p>
             </div>
 
             {/* ÚLTIMO VEÍCULO CADASTRADO */}
@@ -311,7 +474,10 @@ export default function Dashboard() {
                   <strong>{lastOrder.plate}</strong>
 
                   <div className="last-vehicle-details">
-                    <span>Atendimento #{lastOrder.id}</span>
+                    <span>
+                      Atendimento #{lastOrder.id}
+                    </span>
+
                     <span>
                       {new Date(
                         lastOrder.created_at
@@ -332,11 +498,15 @@ export default function Dashboard() {
             onSubmit={registerServiceOrder}
           >
             {error && (
-              <div className="alert error">{error}</div>
+              <div className="alert error">
+                {error}
+              </div>
             )}
 
             {message && (
-              <div className="alert success">{message}</div>
+              <div className="alert success">
+                {message}
+              </div>
             )}
 
             <div className="plate-field">
@@ -403,7 +573,9 @@ export default function Dashboard() {
                           key={type.id}
                           type="button"
                           className={`service-option ${
-                            isSelected ? "selected" : ""
+                            isSelected
+                              ? "selected"
+                              : ""
                           }`}
                           onClick={() =>
                             toggleService(type.id)
@@ -441,7 +613,9 @@ export default function Dashboard() {
                           key={type.id}
                           type="button"
                           className={`service-option service-option-single ${
-                            isSelected ? "selected" : ""
+                            isSelected
+                              ? "selected"
+                              : ""
                           }`}
                           onClick={() =>
                             toggleService(type.id)

@@ -7,7 +7,7 @@ from app.dependencies.report_dependencies import get_report_service
 
 from app.models.employee import Employee
 
-from app.schemas.report_schema import ServiceOrderReportResponseSchema, MonthlyServiceOrderReportSchema, EmployeeMonthlyReportResponseSchema
+from app.schemas.report_schema import ServiceOrderReportResponseSchema, MonthlyServiceOrderReportSchema, EmployeeMonthlyReportResponseSchema, DashboardReportResponseSchema
 
 from app.services.report_service import ReportService
 
@@ -54,3 +54,13 @@ def get_employee_monthly_report(
     service: ReportService = Depends(get_report_service),
 ):
     return service.get_employee_monthly_report(year=year, month=month)
+
+@router.get(
+    "/dashboard",
+    response_model=DashboardReportResponseSchema,
+)
+def get_dashboard_report(
+    current_admin: Employee = Depends(get_current_admin),
+    service: ReportService = Depends(get_report_service),
+):
+    return service.get_dashboard_report()

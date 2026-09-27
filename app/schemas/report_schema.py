@@ -37,3 +37,8 @@ class EmployeeMonthlyReportResponseSchema(BaseModel):
     month: int = Field(..., ge=1, le=12)
     total_service_orders: int = Field(..., ge=0)
     employees: list[EmployeeMonthlyItemSchema]
+
+class DashboardReportResponseSchema(BaseModel):
+    today: int = Field(..., ge=0)
+    month: int = Field(..., ge=0)
+    services: list[ServiceReportItemSchema]
