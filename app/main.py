@@ -9,7 +9,7 @@ from app.core.routes import employee_router, auth_router, service_order_router, 
 
 app = FastAPI( 
     title="CarWash Manager",
-    version="1.0.0",
+    version="1.1.0",
     description="API para gerenciamento do posto de Lavagem"
 )
 
