@@ -32,6 +32,7 @@ export default function Login() {
       <form className="login-card" onSubmit={submit}>
         <div className="login-logo"><Droplets size={30} /></div>
         <h1>Carwash Manager</h1>
+        <span className="app-version">v1.1.0</span>
         <p>Acesse o sistema</p>
 
         {error && <div className="alert error">{error}</div>}
