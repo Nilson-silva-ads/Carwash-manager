@@ -1326,3 +1326,263 @@ th { color: #718096; font-size: 12px; text-transform: uppercase; }
   margin-top: -8px;
   margin-bottom: 8px;
 }
+
+/* =========================================
+   Modal de sucesso - Cadastro de veículo
+   ========================================= */
+
+.success-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+
+  background: rgba(15, 23, 42, 0.55);
+}
+
+.success-modal {
+  width: min(400px, 100%);
+  padding: 30px 24px;
+
+  background: #ffffff;
+  border-radius: 18px;
+
+  text-align: center;
+
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.25);
+
+  animation: success-modal-in 0.2s ease-out;
+}
+
+.success-modal-icon {
+  width: 58px;
+  height: 58px;
+
+  margin: 0 auto 16px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #dcfce7;
+  color: #16a34a;
+
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.success-modal h2 {
+  margin: 0 0 10px;
+
+  color: #0f172a;
+
+  font-size: 21px;
+  font-weight: 700;
+}
+
+.success-modal p {
+  margin: 0 auto 24px;
+
+  color: #64748b;
+
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.success-modal-button {
+  width: 100%;
+  min-height: 46px;
+
+  border: 0;
+  border-radius: 10px;
+
+  background: #2563eb;
+  color: #ffffff;
+
+  font-size: 15px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.success-modal-button:hover {
+  background: #1d4ed8;
+}
+
+.success-modal-button:active {
+  transform: scale(0.98);
+}
+
+@keyframes success-modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+
+/* =========================================
+   Modal de erro - Veículo já cadastrado
+   ========================================= */
+
+.error-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+
+  background: rgba(15, 23, 42, 0.55);
+}
+
+.error-modal {
+  width: min(400px, 100%);
+  padding: 30px 24px;
+
+  background: #ffffff;
+  border-radius: 18px;
+
+  text-align: center;
+
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.25);
+
+  animation: error-modal-in 0.2s ease-out;
+}
+
+.error-modal-icon {
+  width: 58px;
+  height: 58px;
+
+  margin: 0 auto 16px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #fee2e2;
+  color: #dc2626;
+
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.error-modal h2 {
+  margin: 0 0 10px;
+
+  color: #0f172a;
+
+  font-size: 21px;
+  font-weight: 700;
+}
+
+.error-modal p {
+  margin: 0 auto 24px;
+
+  color: #64748b;
+
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.error-modal p strong {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.error-modal-button {
+  width: 100%;
+  min-height: 46px;
+
+  border: 0;
+  border-radius: 10px;
+
+  background: #dc2626;
+  color: #ffffff;
+
+  font-size: 15px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.error-modal-button:hover {
+  background: #b91c1c;
+}
+
+.error-modal-button:active {
+  transform: scale(0.98);
+}
+
+@keyframes error-modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+
+/* =========================================
+   Modais - Mobile
+   ========================================= */
+
+@media (max-width: 600px) {
+  .success-modal,
+  .error-modal {
+    width: min(400px, calc(100% - 10px));
+    padding: 28px 20px;
+    border-radius: 16px;
+  }
+
+  .success-modal-icon,
+  .error-modal-icon {
+    width: 54px;
+    height: 54px;
+    font-size: 28px;
+  }
+
+  .success-modal h2,
+  .error-modal h2 {
+    font-size: 19px;
+  }
+
+  .success-modal p,
+  .error-modal p {
+    font-size: 14px;
+  }
+
+  .success-modal-button,
+  .error-modal-button {
+    min-height: 48px;
+  }
+}

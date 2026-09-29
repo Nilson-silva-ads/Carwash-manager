@@ -128,6 +128,9 @@ export default function Dashboard() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
+  const [successModal, setSuccessModal] = useState(false);
+  const [errorModal, setErrorModal] = useState(false);
+
   const [adminTodayTotal, setAdminTodayTotal] = useState<number | null>(
     null
   );
@@ -243,6 +246,8 @@ export default function Dashboard() {
     setSelected([]);
     setError("");
     setMessage("");
+    setSuccessModal(false);
+    setErrorModal(false);
   }
 
   async function registerServiceOrder(event: FormEvent) {
@@ -252,6 +257,8 @@ export default function Dashboard() {
 
     setError("");
     setMessage("");
+    setSuccessModal(false);
+    setErrorModal(false);
 
     const normalizedPlate = plate
       .replace(/\s/g, "")
@@ -289,12 +296,18 @@ export default function Dashboard() {
       setMessage(
         `Veículo ${order.plate} registrado com sucesso.`
       );
+
+      setSuccessModal(true);
     } catch (err) {
-      setError(
+      const errorMessage =
         err instanceof Error
           ? err.message
-          : "Não foi possível registrar o atendimento."
-      );
+          : "Não foi possível registrar o atendimento.";
+
+      setError(errorMessage);
+
+      setErrorModal(true);
+      
     } finally {
       setSubmitting(false);
     }
@@ -431,7 +444,9 @@ export default function Dashboard() {
               </div>
             ) : (
               <div className="admin-services-empty">
-                <span>Nenhum serviço realizado hoje.</span>
+                <span>
+                  Nenhum serviço realizado hoje.
+                </span>
               </div>
             )}
           </section>
@@ -446,6 +461,7 @@ export default function Dashboard() {
           <div className="service-page-top">
             <div className="service-page-header">
               <h1>Cadastrar veículo e atendimento</h1>
+
               <p>
                 Informe a placa e os serviços realizados
               </p>
@@ -497,15 +513,9 @@ export default function Dashboard() {
             className="service-registration-card"
             onSubmit={registerServiceOrder}
           >
-            {error && (
+            {error && !errorModal && (
               <div className="alert error">
                 {error}
-              </div>
-            )}
-
-            {message && (
-              <div className="alert success">
-                {message}
               </div>
             )}
 
@@ -671,6 +681,86 @@ export default function Dashboard() {
               Cancelar
             </button>
           </form>
+        </div>
+      )}
+
+      {/* ======================================================
+          MODAL DE SUCESSO
+          ====================================================== */}
+
+      {successModal && (
+        <div
+          className="success-modal-overlay"
+          onClick={() => setSuccessModal(false)}
+        >
+          <div
+            className="success-modal"
+            onClick={(event) =>
+              event.stopPropagation()
+            }
+          >
+            <div className="success-modal-icon">
+              ✓
+            </div>
+
+            <h2>Veículo cadastrado!</h2>
+
+            <p>{message}</p>
+
+            <button
+              type="button"
+              className="success-modal-button"
+              onClick={() =>
+                setSuccessModal(false)
+              }
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ======================================================
+          MODAL DE ERRO - PLACA JÁ CADASTRADA
+          ====================================================== */}
+
+      {errorModal && (
+        <div
+          className="error-modal-overlay"
+          onClick={() => setErrorModal(false)}
+        >
+          <div
+            className="error-modal"
+            onClick={(event) =>
+              event.stopPropagation()
+            }
+          >
+            <div className="error-modal-icon">
+              !
+            </div>
+
+            <h2>Veículo já cadastrado</h2>
+
+            <p>
+              A placa{" "}
+              <strong>
+                {plate
+                  .replace(/\s/g, "")
+                  .toUpperCase()}
+              </strong>{" "}
+              já possui um atendimento registrado.
+            </p>
+
+            <button
+              type="button"
+              className="error-modal-button"
+              onClick={() =>
+                setErrorModal(false)
+              }
+            >
+              OK
+            </button>
+          </div>
         </div>
       )}
     </>
