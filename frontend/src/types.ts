@@ -29,6 +29,13 @@ export type ServiceOrderReport = {
   services: ServiceReportItem[];
 };
 
+export type DashboardReport = {
+  today: number;
+  month: number;
+  total: number;
+  services: ServiceReportItem[];
+};
+
 export type MonthlyReport = {
   month: number;
   total_service_orders: number;
@@ -39,7 +46,14 @@ export type EmployeeMonthlyReport = {
   year: number;
   month: number;
   total_service_orders: number;
-  employees: Array<{ employee_id: number; employee_name: string; total: number; services: ServiceReportItem[] }>;
+  employees: Array<{
+    employee_id: number;
+    employee_name: string;
+    total: number;
+    total_services: number;
+    average_services_per_order: number;
+    services: ServiceReportItem[];
+  }>;
 };
 
 export type ServiceOrder = {

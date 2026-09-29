@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import func, select, extract
+from sqlalchemy import func, select
 from app.core.timezone import month_bounds_utc
 from sqlalchemy.orm import Session
 
@@ -16,22 +16,39 @@ class ReportRepository:
         self.session = session
 
     
-    def count_service_orders( self, start_date: datetime, end_date: datetime) -> int:
+    def count_service_orders(
+        self,
+        start_date: datetime | None = None,
+        end_date: datetime | None = None,
+        employee_id: int | None = None,
+        service_type_id: int | None = None,
+    ) -> int:
+        """Conta atendimentos distintos, aplicando os filtros informados."""
+        stmt = select(func.count(func.distinct(ServiceOrder.id))).select_from(ServiceOrder)
 
-        stmt = (
-            select(func.count(ServiceOrder.id))
-            .where(
-                ServiceOrder.created_at >= start_date,
-                ServiceOrder.created_at <= end_date,
-            )
-        )
+        if service_type_id is not None:
+            stmt = stmt.join(
+                ServiceOrderItem,
+                ServiceOrderItem.service_order_id == ServiceOrder.id,
+            ).where(ServiceOrderItem.service_type_id == service_type_id)
 
-        result = self.session.execute(stmt)
+        if start_date is not None:
+            stmt = stmt.where(ServiceOrder.created_at >= start_date)
+        if end_date is not None:
+            stmt = stmt.where(ServiceOrder.created_at <= end_date)
+        if employee_id is not None:
+            stmt = stmt.where(ServiceOrder.employee_id == employee_id)
 
-        return result.scalar_one()
+        return self.session.execute(stmt).scalar_one()
 
     
-    def count_services_by_type( self, start_date: datetime, end_date: datetime ):
+    def count_services_by_type(
+        self,
+        start_date: datetime | None = None,
+        end_date: datetime | None = None,
+        employee_id: int | None = None,
+        service_type_id: int | None = None,
+    ):
 
         stmt = (
             select(
@@ -47,10 +64,6 @@ class ReportRepository:
                 ServiceOrder,
                 ServiceOrder.id == ServiceOrderItem.service_order_id,
             )
-            .where(
-                ServiceOrder.created_at >= start_date,
-                ServiceOrder.created_at <= end_date,
-            )
             .group_by(
                 ServiceType.id,
                 ServiceType.name,
@@ -60,9 +73,16 @@ class ReportRepository:
             )
         )
 
-        result = self.session.execute(stmt)
+        if start_date is not None:
+            stmt = stmt.where(ServiceOrder.created_at >= start_date)
+        if end_date is not None:
+            stmt = stmt.where(ServiceOrder.created_at <= end_date)
+        if employee_id is not None:
+            stmt = stmt.where(ServiceOrder.employee_id == employee_id)
+        if service_type_id is not None:
+            stmt = stmt.where(ServiceType.id == service_type_id)
 
-        return result.all()
+        return self.session.execute(stmt).all()
 
 
     def count_service_orders_by_month( self, year: int):

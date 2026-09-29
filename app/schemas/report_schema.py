@@ -29,6 +29,8 @@ class EmployeeMonthlyItemSchema(BaseModel):
     employee_id: int
     employee_name: str
     total: int = Field(..., ge=0)
+    total_services: int = Field(..., ge=0)
+    average_services_per_order: float = Field(..., ge=0)
     services: list[EmployeeMonthlyServiceSchema]
 
 
@@ -41,4 +43,5 @@ class EmployeeMonthlyReportResponseSchema(BaseModel):
 class DashboardReportResponseSchema(BaseModel):
     today: int = Field(..., ge=0)
     month: int = Field(..., ge=0)
+    total: int = Field(..., ge=0)
     services: list[ServiceReportItemSchema]

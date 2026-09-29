@@ -14,6 +14,8 @@ class ReportService:
         self, 
         start_date: datetime,
         end_date: datetime,
+        employee_id: int | None = None,
+        service_type_id: int | None = None,
     ):
 
         if start_date > end_date:
@@ -24,11 +26,15 @@ class ReportService:
         total_service_orders = self.report_repository.count_service_orders(
             start_date=start_date,
             end_date = end_date,
+            employee_id=employee_id,
+            service_type_id=service_type_id,
         )
 
         services_by_type = self.report_repository.count_services_by_type(
             start_date = start_date,
             end_date = end_date,
+            employee_id=employee_id,
+            service_type_id=service_type_id,
         )
 
         return {
@@ -77,6 +83,8 @@ class ReportService:
             end_date=now_utc,
         )
 
+        total = self.report_repository.count_service_orders()
+
         services_data = self.report_repository.count_services_by_type(
             start_date=today_start_utc,
             end_date=now_utc,
@@ -94,6 +102,7 @@ class ReportService:
         return {
             "today": today_total,
             "month": month_total,
+            "total": total,
             "services": services,
         }
 
@@ -173,6 +182,8 @@ class ReportService:
                     "employee_id": employee_id,
                     "employee_name": employee_name,
                     "total": order_totals.get(employee_id, 0),
+                    "total_services": 0,
+                    "average_services_per_order": 0,
                     "services": [],
                 }
 
@@ -184,9 +195,19 @@ class ReportService:
                 }
             )
 
+            employees[employee_id]["total_services"] += total
+
+        for employee in employees.values():
+            if employee["total"]:
+                employee["average_services_per_order"] = round(
+                    employee["total_services"] / employee["total"], 2
+                )
+
         return {
             "year": year,
             "month": month,
             "total_service_orders": total_service_orders,
-            "employees": list(employees.values()),
+            "employees": sorted(
+                employees.values(), key=lambda employee: (-employee["total"], employee["employee_name"])
+            ),
         }

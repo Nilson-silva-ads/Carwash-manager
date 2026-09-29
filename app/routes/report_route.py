@@ -25,12 +25,16 @@ router = APIRouter(
 def get_service_order_report(
     start_date: datetime,
     end_date: datetime,
+    employee_id: int | None = None,
+    service_type_id: int | None = None,
     current_admin: Employee = Depends(get_current_admin),
     service: ReportService = Depends(get_report_service),
 ):
     return service.get_service_order_report(
         start_date=start_date,
         end_date=end_date,
+        employee_id=employee_id,
+        service_type_id=service_type_id,
     )
 
 
