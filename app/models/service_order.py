@@ -1,4 +1,4 @@
-from sqlalchemy import String, ForeignKey, Index
+from sqlalchemy import String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base_model import BaseModel
@@ -10,9 +10,6 @@ from typing import TYPE_CHECKING
 class ServiceOrder(BaseModel):
     """Modelo que representa um serviço prestado."""
     __tablename__ = "service_orders"
-    __table_args__ = (
-        Index("ix_service_orders_employee_created_at", "employee_id", "created_at"),
-    )
 
     plate: Mapped[str] = mapped_column(String(10), nullable=False) #Defice placa de veiculo como string de ate 10 caracteres, sem permitir valores nulos.
     employee_id: Mapped[int] = mapped_column(ForeignKey("employees.id"), nullable=False) #Define employee_id como chave estrangeira para a tabela employees, sem permitir valores nulos.

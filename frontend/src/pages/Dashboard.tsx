@@ -154,42 +154,32 @@ export default function Dashboard() {
   useEffect(() => {
     if (!employee || employee.is_admin) return;
 
-    let cancelled = false;
     setLoading(true);
     setError("");
 
-    apiFetch<ServiceType[]>("/service-types")
-      .then((serviceTypes) => {
-        if (!cancelled) {
-          setTypes(serviceTypes.filter((type) => type.is_active));
-        }
+    Promise.all([
+      apiFetch<ServiceType[]>("/service-types"),
+      apiFetch<ServiceOrder[]>(
+        `/service-orders/employee/${employee.id}`
+      ),
+    ])
+      .then(([serviceTypes, orders]) => {
+        setTypes(
+          serviceTypes.filter((type) => type.is_active)
+        );
+
+        setLastOrder(orders[0] ?? null);
       })
       .catch((err) => {
-        if (!cancelled) {
-          setError(err instanceof Error ? err.message : "Não foi possível carregar os dados.");
-        }
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Não foi possível carregar os dados."
+        );
       })
       .finally(() => {
-        if (!cancelled) {
-          setLoading(false);
-        }
+        setLoading(false);
       });
-
-    apiFetch<ServiceOrder[]>(`/service-orders?employee_id=${employee.id}&limit=1`)
-      .then((orders) => {
-        if (!cancelled) {
-          setLastOrder(orders[0] ?? null);
-        }
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setLastOrder(null);
-        }
-      });
-
-    return () => {
-      cancelled = true;
-    };
   }, [employee]);
 
   /*
