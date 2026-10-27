@@ -159,16 +159,16 @@ export default function Dashboard() {
 
     Promise.all([
       apiFetch<ServiceType[]>("/service-types"),
-      apiFetch<ServiceOrder[]>(
-        `/service-orders/employee/${employee.id}`
+      apiFetch<ServiceOrder | null>(
+        `/service-orders/employee/${employee.id}/latest`
       ),
     ])
-      .then(([serviceTypes, orders]) => {
+      .then(([serviceTypes, latestOrder]) => {
         setTypes(
           serviceTypes.filter((type) => type.is_active)
         );
 
-        setLastOrder(orders[0] ?? null);
+        setLastOrder(latestOrder);
       })
       .catch((err) => {
         setError(

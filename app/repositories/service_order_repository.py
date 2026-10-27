@@ -50,6 +50,19 @@ class ServiceOrderRepository(BaseRepository[ServiceOrder]):
 
         return result.scalars().all()
 
+    def get_latest_by_employee_id(self, employee_id: int) -> ServiceOrder | None:
+        """Retorna somente o atendimento mais recente do funcionário."""
+        stmt = (
+            select(self.model)
+            .where(self.model.employee_id == employee_id)
+            .order_by(desc(self.model.created_at), desc(self.model.id))
+            .limit(1)
+        )
+
+        result = self.session.execute(stmt)
+
+        return result.scalar_one_or_none()
+
 
     def get_by_date_range( self, start_date: datetime, end_date: datetime ) -> list[ServiceOrder]:
 

@@ -68,6 +68,19 @@ def get_service_orders_by_employee(
 
 
 
+@router.get(
+    "/employee/{employee_id}/latest",
+    response_model=ServiceOrderResponseSchema | None,
+)
+def get_latest_service_order_by_employee(
+    employee_id: int,
+    current_employee: Employee = Depends(get_current_employee),
+    service: ServiceOrderService = Depends(get_service_order_service),
+):
+    return service.get_latest_service_order_by_employee(employee_id)
+
+
+
 @router.get("/{service_order_id}", response_model=ServiceOrderResponseSchema)
 
 def get_service_order_by_id( 
